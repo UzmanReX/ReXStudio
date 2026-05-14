@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Giriş Yap</title>
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#050510;
+    color:white;
+    font-family:Arial;
+}
+
+.box{
+    background:#111122;
+    padding:40px;
+
+    border:2px solid cyan;
+    box-shadow:0 0 20px cyan;
+
+    border-radius:15px;
+    text-align:center;
+}
+
+input{
+    width:220px;
+    padding:10px;
+    margin:10px;
+
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    padding:10px 20px;
+    background:cyan;
+    border:none;
+
+    border-radius:10px;
+    cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Gmail ile Giriş</h2>
+
+<form method="POST">
+
+<input type="email" name="email" placeholder="Gmail">
+
+<br>
+
+<input type="password" name="password" placeholder="Şifre">
+
+<br>
+
+<button>Giriş Yap</button>
+
+</form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Uygulamalar | UzmanReX</title>
+
+<style>
+
+/* RESET */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial;
+    background:#050510;
+    color:white;
+    overflow-x:hidden;
+    padding-top:100px;
+}
+
+/* 🌌 NEON BACKGROUND */
+.bg{
+    position:fixed;
+    width:500px;
+    height:500px;
+
+    border-radius:50%;
+
+    filter:blur(140px);
+
+    opacity:0.25;
+
+    z-index:-2;
+
+    animation:move 12s infinite alternate ease-in-out;
+}
+
+.bg1{
+    background:cyan;
+    top:-150px;
+    left:-150px;
+}
+
+.bg2{
+    background:#ff00ff;
+    bottom:-150px;
+    right:-150px;
+
+    animation-delay:2s;
+}
+
+.bg3{
+    background:yellow;
+    top:40%;
+    left:30%;
+
+    animation-delay:4s;
+}
+
+@keyframes move{
+
+    0%{
+        transform:translate(0,0) scale(1);
+    }
+
+    100%{
+        transform:translate(150px,100px) scale(1.3);
+    }
+
+}
+
+/* 🌠 PARÇACIKLAR */
+.particles{
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    z-index:-3;
+}
+
+.particle{
+    position:absolute;
+
+    width:4px;
+    height:4px;
+
+    background:cyan;
+
+    border-radius:50%;
+
+    opacity:0.7;
+
+    box-shadow:0 0 10px cyan;
+
+    animation:floatParticle linear infinite;
+}
+
+@keyframes floatParticle{
+
+    from{
+        transform:translateY(100vh);
+    }
+
+    to{
+        transform:translateY(-10vh);
+    }
+
+}
+
+/* NAVBAR */
+.navbar{
+    position:fixed;
+    top:0;
+    left:0;
+
+    width:100%;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:18px 40px;
+
+    background:rgba(10,10,20,0.85);
+
+    backdrop-filter:blur(12px);
+
+    border-bottom:1px solid cyan;
+
+    z-index:1000;
+}
+
+.logo{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    font-size:28px;
+    font-weight:bold;
+
+    color:cyan;
+
+    text-shadow:0 0 15px cyan;
+}
+
+.logo img{
+
+    width:40px;
+    height:40px;
+
+    border-radius:10px;
+
+    box-shadow:
+    0 0 10px cyan,
+    0 0 20px cyan;
+}
+
+.menu{
+    display:flex;
+    gap:20px;
+}
+
+.menu a{
+    color:white;
+
+    text-decoration:none;
+
+    padding:8px 15px;
+
+    border-radius:10px;
+
+    transition:0.3s;
+}
+
+.menu a:hover{
+    color:cyan;
+
+    box-shadow:0 0 15px cyan;
+}
+
+/* 🔴 YOUTUBE */
+.yt-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    color:red !important;
+
+    border:1px solid red;
+
+    padding:8px 15px;
+
+    border-radius:12px;
+
+    text-decoration:none;
+
+    box-shadow:
+    0 0 10px red,
+    0 0 20px red;
+
+    animation:ytGlow 1.5s infinite alternate;
+}
+
+.yt-btn img{
+    width:22px;
+    height:22px;
+}
+
+.yt-btn:hover{
+
+    transform:scale(1.08);
+
+    background:rgba(255,0,0,0.1);
+
+    box-shadow:
+    0 0 20px red,
+    0 0 40px red;
+}
+
+@keyframes ytGlow{
+
+    0%{
+        box-shadow:
+        0 0 10px red,
+        0 0 20px red;
+    }
+
+    100%{
+        box-shadow:
+        0 0 20px red,
+        0 0 40px red;
+    }
+
+}
+
+/* BAŞLIK */
+.title{
+    text-align:center;
+    margin-bottom:50px;
+}
+
+.title h1{
+    font-size:60px;
+
+    color:cyan;
+
+    text-shadow:
+    0 0 20px cyan,
+    0 0 40px cyan;
+}
+
+/* APP STORE */
+.apps{
+    display:flex;
+
+    justify-content:center;
+
+    gap:40px;
+
+    flex-wrap:wrap;
+
+    padding:20px;
+}
+
+.app-card{
+    width:320px;
+
+    background:#111122;
+
+    border-radius:25px;
+
+    padding:25px;
+
+    border:1px solid rgba(255,255,255,0.1);
+
+    transition:0.4s;
+
+    position:relative;
+
+    overflow:hidden;
+}
+
+.app-card:hover{
+
+    transform:translateY(-10px) scale(1.03);
+
+    border:1px solid cyan;
+
+    box-shadow:
+    0 0 20px cyan,
+    0 0 40px cyan;
+}
+
+/* APP ICON */
+.app-icon{
+    width:90px;
+    height:90px;
+
+    border-radius:20px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 0 20px cyan;
+}
+
+/* APP NAME */
+.app-card h2{
+    color:white;
+    margin-bottom:10px;
+}
+
+/* STARS */
+.stars{
+    color:gold;
+    margin-bottom:15px;
+}
+
+/* BUTTON */
+.download{
+    display:inline-block;
+
+    margin-top:20px;
+
+    padding:12px 25px;
+
+    background:cyan;
+
+    color:black;
+
+    text-decoration:none;
+
+    border-radius:12px;
+
+    font-weight:bold;
+
+    transition:0.3s;
+}
+
+.download:hover{
+
+    box-shadow:
+    0 0 20px cyan,
+    0 0 40px cyan;
+}
+
+.status{
+    color:#aaa;
+    margin-top:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- 🌌 BACKGROUND -->
+<div class="bg bg1"></div>
+<div class="bg bg2"></div>
+<div class="bg bg3"></div>
+
+<!-- 🌠 PARTICLES -->
+<div class="particles" id="particles"></div>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+
+<div class="logo">
+
+<img src="/static/rexlogo.png">
+
+<span>UzmanReX</span>
+
+</div>
+
+<div class="menu">
+
+<a href="/">Ana Sayfa</a>
+<a href="/uygulamalar">Uygulamalar</a>
+<a href="/projeler">Projeler</a>
+<a href="/destek">İletişim</a>
+
+<a class="yt-btn"
+href="http://www.youtube.com/@UzmanReX"
+target="_blank">
+
+<img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+
+YouTube
+
+</a>
+
+</div>
+
+</nav>
+
+<!-- TITLE -->
+<div class="title">
+
+<h1>APP STORE</h1>
+
+</div>
+
+<!-- APPS -->
+<div class="apps">
+
+<!-- APP 1 -->
+<div class="app-card">
+
+<img class="app-icon"
+src="/static/uzmannot.png">
+<h2>UzmanNot📝</h2>
+
+<div class="stars">★★★★★</div>
+
+<p>
+Modern not alma sistemi.
+</p>
+
+<div class="status">
+Sürüm 1.0
+</div>
+
+<a class="download"
+href="/static/downloads/UzmanNotPro.exe">
+
+İndir
+
+</a>
+
+</div>
+
+<!-- APP 2 -->
+<div class="app-card">
+
+<img class="app-icon"
+src="/static/uzmannotmax.png">
+
+<h2>UzmanNot Pro MAX💎</h2>
+
+<div class="stars">★★★★★</div>
+
+<p>
+Gelişmiş özelliklere sahip premium not alma sistemi.
+</p>
+
+<div class="status">
+Sürüm 2.0 MAX
+</div>
+
+<a class="download"
+href="/static/downloads/UzmanNotProMAX.exe">
+
+İndir
+
+</a>
+
+</div>
+
+</div>
+
+<!-- JS -->
+<script>
+
+const particles = document.getElementById("particles");
+
+for(let i = 0; i < 120; i++){
+
+    let p = document.createElement("div");
+
+    p.classList.add("particle");
+
+    p.style.left =
+    Math.random() * 100 + "vw";
+
+    p.style.animationDuration =
+    (4 + Math.random() * 8) + "s";
+
+    p.style.opacity =
+    Math.random();
+
+    p.style.width =
+    p.style.height =
+    (2 + Math.random() * 5) + "px";
+
+    particles.appendChild(p);
+}
+
+</script>
+
+</body>
+</html>
