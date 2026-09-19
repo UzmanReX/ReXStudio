@@ -94,7 +94,9 @@ def send_code(email, code):
                 "subject": "ReXStudio Doğrulama Kodunuz",
                 "body": f"""Merhaba!
 
-ReXStudio doğrulama kodunuz:
+Bu ReXStudio doğrulama mailidir.
+
+Doğrulama kodunuz:
 
 {code}
 
@@ -102,8 +104,7 @@ Bu kod 10 dakika boyunca geçerlidir.
 
 Kodu siz istemediyseniz bu e-postayı dikkate almayın.
 
-ReXStudio
-"""
+ReXStudio"""
             },
             timeout=15
         )
@@ -172,12 +173,12 @@ def kayit():
     conn = get_db()
 
     existing_username = conn.execute(
-        "SELECT id FROM users WHERE username = ?",
+        "SELECT id FROM users WHERE LOWER(username) = LOWER(?)",
         (username,)
     ).fetchone()
 
     existing_email = conn.execute(
-        "SELECT id FROM users WHERE email = ?",
+        "SELECT id FROM users WHERE LOWER(email) = LOWER(?)",
         (email,)
     ).fetchone()
 
@@ -212,10 +213,7 @@ def kayit():
             error=f"Mail gönderilemedi: {message}"
         )
 
-    return render_template(
-        "verify.html",
-        success=f"Doğrulama kodu {email} adresine gönderildi."
-    )
+    return redirect(url_for("dogrula"))
 
 
 @app.route("/dogrula", methods=["GET", "POST"])
@@ -255,6 +253,7 @@ def dogrula():
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
         )
+
         conn.commit()
 
     except sqlite3.IntegrityError:
@@ -268,16 +267,14 @@ def dogrula():
 
     conn.close()
 
-    session.pop("register_code", None)
-    session.pop("register_code_time", None)
-    session.pop("register_username", None)
-    session.pop("register_email", None)
+    session.clear()
 
-    return render_template(
-        "verify.html",
-        success="Kayıt başarılı! Hesabınız oluşturuldu.",
-        registered=True
-    )
+    session.permanent = True
+    session["logged_in"] = True
+    session["username"] = username
+    session["toast"] = "Kayıt olundu"
+
+    return redirect(url_for("hesap"))
 
 
 @app.route("/giris", methods=["GET", "POST"])
@@ -290,6 +287,7 @@ def giris():
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
+
     remember = request.form.get("remember") == "on"
 
     if not username or not email:
@@ -309,7 +307,8 @@ def giris():
     user = conn.execute(
         """
         SELECT * FROM users
-        WHERE username = ? AND email = ?
+        WHERE LOWER(username) = LOWER(?)
+        AND LOWER(email) = LOWER(?)
         """,
         (username, email)
     ).fetchone()
@@ -324,13 +323,13 @@ def giris():
 
     code = str(secrets.randbelow(900000) + 100000)
 
-    session["login_username"] = username
-    session["login_email"] = email
+    session["login_username"] = user["username"]
+    session["login_email"] = user["email"]
     session["login_code"] = code
     session["login_code_time"] = time.time()
     session["login_remember"] = remember
 
-    success, message = send_code(email, code)
+    success, message = send_code(user["email"], code)
 
     if not success:
         session.clear()
@@ -340,10 +339,7 @@ def giris():
             error=f"Mail gönderilemedi: {message}"
         )
 
-    return render_template(
-        "login_verify.html",
-        success=f"Giriş kodu {email} adresine gönderildi."
-    )
+    return redirect(url_for("login_dogrula"))
 
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
@@ -381,12 +377,9 @@ def login_dogrula():
     session.permanent = remember
     session["logged_in"] = True
     session["username"] = username
+    session["toast"] = "Giriş yapıldı"
 
-    return render_template(
-        "login_verify.html",
-        success=f"Giriş başarılı! Hoş geldin, {username}.",
-        logged_in=True
-    )
+    return redirect(url_for("hesap"))
 
 
 @app.route("/hesap")
@@ -399,7 +392,11 @@ def hesap():
     conn = get_db()
 
     user = conn.execute(
-        "SELECT username, email FROM users WHERE username = ?",
+        """
+        SELECT username, email
+        FROM users
+        WHERE LOWER(username) = LOWER(?)
+        """,
         (username,)
     ).fetchone()
 
@@ -407,7 +404,7 @@ def hesap():
         """
         SELECT name, filename, created_at
         FROM apps
-        WHERE username = ?
+        WHERE LOWER(username) = LOWER(?)
         ORDER BY id DESC
         """,
         (username,)
@@ -419,11 +416,14 @@ def hesap():
         session.clear()
         return redirect(url_for("giris"))
 
+    toast = session.pop("toast", None)
+
     return render_template(
         "account.html",
         username=user["username"],
         email=user["email"],
-        apps=apps
+        apps=apps,
+        toast=toast
     )
 
 
