@@ -6,7 +6,7 @@ import time
 import sqlite3
 import requests
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__, static_folder=None)
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
@@ -91,6 +91,14 @@ def send_code(email, code):
         return False, f"{type(e).__name__}: {e}"
 
 
+@app.route("/static/<path:filename>")
+def static_files(filename):
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        filename
+    )
+
+
 @app.route("/")
 def home():
     if session.get("logged_in") and session.get("remember_login"):
@@ -121,6 +129,7 @@ def destek():
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
+
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
@@ -196,6 +205,7 @@ def kayit():
 
 @app.route("/dogrula", methods=["GET", "POST"])
 def dogrula():
+
     if "register_code" not in session:
         return redirect(url_for("kayit"))
 
@@ -231,6 +241,7 @@ def dogrula():
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
         )
+
         conn.commit()
 
     except sqlite3.IntegrityError:
@@ -257,7 +268,9 @@ def dogrula():
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
+
     if request.method == "GET":
+
         if session.get("logged_in"):
             return redirect(url_for("hesap"))
 
@@ -268,6 +281,7 @@ def giris():
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
+
     remember = request.form.get("remember") == "on"
 
     if not username or not email:
@@ -325,6 +339,7 @@ def giris():
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
 def login_dogrula():
+
     if "login_code" not in session:
         return redirect(url_for("giris"))
 
@@ -366,6 +381,7 @@ def login_dogrula():
 
 @app.route("/hesap")
 def hesap():
+
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
@@ -409,29 +425,37 @@ def hesap():
     )
 
 
+@app.route("/indir/uzmannotpromax")
+def indir_uzmannotpromax():
+
+    if not session.get("logged_in"):
+        abort(403)
+
+    downloads_folder = os.path.join(
+        app.root_path,
+        "downloads"
+    )
+
+    file_path = os.path.join(
+        downloads_folder,
+        "UzmanNotProMax.exe"
+    )
+
+    if not os.path.isfile(file_path):
+        abort(404)
+
+    return send_from_directory(
+        downloads_folder,
+        "UzmanNotProMax.exe",
+        as_attachment=True,
+        download_name="UzmanNotProMax.exe"
+    )
+
+
 @app.route("/cikis")
 def cikis():
     session.clear()
     return redirect(url_for("anasayfa"))
-
-
-@app.route("/static/<path:filename>")
-def protected_static(filename):
-    if filename.replace("\\", "/") == "UzmanNotProMax.exe":
-        if not session.get("logged_in"):
-            abort(403)
-
-        return send_from_directory(
-            os.path.join(app.root_path, "static"),
-            "UzmanNotProMax.exe",
-            as_attachment=True,
-            download_name="UzmanNotProMax.exe"
-        )
-
-    return send_from_directory(
-        os.path.join(app.root_path, "static"),
-        filename
-    )
 
 
 if __name__ == "__main__":
