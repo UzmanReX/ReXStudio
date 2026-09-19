@@ -1,4 +1,6 @@
+```python
 from flask import Flask, render_template, request, session, redirect, url_for
+from datetime import timedelta
 import os
 import secrets
 import time
@@ -9,8 +11,11 @@ app = Flask(__name__)
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
-    "rexstudio-development-secret-change-this"
+    "rexstudio-development-secret"
 )
+
+# Beni Hatırla seçilirse oturum 30 gün kalır
+app.permanent_session_lifetime = timedelta(days=30)
 
 DATABASE = "users.db"
 
@@ -29,6 +34,16 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS apps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            name TEXT NOT NULL,
+            filename TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -67,7 +82,8 @@ Bu kod 10 dakika boyunca geçerlidir.
 
 Kodu siz istemediyseniz bu e-postayı dikkate almayın.
 
-ReXStudio"""
+ReXStudio
+Gönderen: onboarding@resend.dev"""
             },
             timeout=15
         )
@@ -81,10 +97,23 @@ ReXStudio"""
         return False, f"{type(e).__name__}: {e}"
 
 
+# =========================
+# ANA SAYFA
+# =========================
+
 @app.route("/")
 def home():
+
+    # Giriş yapılmışsa otomatik Hesabım
+    if session.get("logged_in"):
+        return redirect(url_for("hesap"))
+
     return render_template("index.html")
 
+
+# =========================
+# DİĞER SAYFALAR
+# =========================
 
 @app.route("/uygulamalar")
 def uygulamalar():
@@ -109,7 +138,7 @@ def destek():
 def kayit():
 
     if session.get("logged_in"):
-        return redirect(url_for("home"))
+        return redirect(url_for("hesap"))
 
     if request.method == "GET":
         return render_template("register.html")
@@ -256,13 +285,15 @@ def dogrula():
 def giris():
 
     if session.get("logged_in"):
-        return redirect(url_for("home"))
+        return redirect(url_for("hesap"))
 
     if request.method == "GET":
         return render_template("login.html")
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
+
+    remember = request.form.get("remember") == "on"
 
     if not username or not email:
         return render_template(
@@ -294,6 +325,7 @@ def giris():
     session["login_email"] = email
     session["login_code"] = code
     session["login_code_time"] = time.time()
+    session["login_remember"] = remember
 
     success, message = send_code(email, code)
 
@@ -340,11 +372,15 @@ def login_dogrula():
         )
 
     username = session["login_username"]
+    remember = session.get("login_remember", False)
 
     session.clear()
 
     session["logged_in"] = True
     session["username"] = username
+
+    # Beni Hatırla
+    session.permanent = remember
 
     return render_template(
         "login_verify.html",
@@ -372,6 +408,16 @@ def hesap():
         (username,)
     ).fetchone()
 
+    apps = conn.execute(
+        """
+        SELECT name, filename, created_at
+        FROM apps
+        WHERE username = ?
+        ORDER BY id DESC
+        """,
+        (username,)
+    ).fetchall()
+
     conn.close()
 
     if not user:
@@ -381,15 +427,23 @@ def hesap():
     return render_template(
         "account.html",
         username=user["username"],
-        email=user["email"]
+        email=user["email"],
+        apps=apps
     )
 
 
+# =========================
+# ÇIKIŞ
+# =========================
+
 @app.route("/cikis")
 def cikis():
+
     session.clear()
+
     return redirect(url_for("home"))
 
 
 if __name__ == "__main__":
     app.run(debug=True)
+```
