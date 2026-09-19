@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 
 <head>
@@ -349,9 +350,28 @@ body{
 
     font-weight:bold;
 
+    text-decoration:none;
+
+    cursor:pointer;
+
     box-shadow:
     0 0 10px cyan,
     0 0 20px rgba(0,255,255,0.3);
+
+    transition:0.3s;
+}
+
+.email-box:hover{
+
+    transform:scale(1.05);
+
+    color:white;
+
+    background:rgba(0,255,255,0.15);
+
+    box-shadow:
+    0 0 20px cyan,
+    0 0 40px cyan;
 }
 
 .support-note{
@@ -454,12 +474,12 @@ istiyorsanız veya herhangi bir konuda destek gerekiyorsa
 bizimle iletişime geçebilirsiniz.
 </p>
 
-<div class="email-box">
+<a class="email-box" href="mailto:rexstudiosupport@gmail.com">
 rexstudiosupport@gmail.com
-</div>
+</a>
 
 <div class="support-note">
-Öneri taleplerinizi bu e-posta adresine gönderebilirsiniz.
+E-posta adresine tıklayarak doğrudan mesaj gönderebilirsiniz.
 </div>
 
 </div>
