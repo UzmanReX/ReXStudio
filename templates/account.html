@@ -13,7 +13,7 @@
 
 body{
     margin:0;
-    height:100vh;
+    min-height:100vh;
 
     display:flex;
     justify-content:center;
@@ -26,33 +26,63 @@ body{
 
 .box{
     background:#111122;
+
     padding:40px;
 
+    width:380px;
+
     border:2px solid cyan;
-    box-shadow:0 0 20px cyan;
+
+    box-shadow:
+    0 0 20px cyan;
 
     border-radius:15px;
+
     text-align:center;
 }
 
 .info{
-    margin:15px;
+    margin:20px 0;
+    padding:15px;
+
+    background:#080812;
+
+    border-radius:10px;
+}
+
+.apps{
+    margin-top:25px;
+}
+
+.app-item{
+    margin-top:10px;
+    padding:12px;
+
+    background:#080812;
+
+    border:1px solid cyan;
+
+    border-radius:10px;
 }
 
 .button{
     display:inline-block;
+
     padding:10px 20px;
-    margin:8px;
+
+    margin-top:25px;
 
     background:cyan;
+
     color:black;
 
     border-radius:10px;
+
     text-decoration:none;
 }
 
 .logout{
-    background:#ff4d4d;
+    background:red;
 }
 
 </style>
@@ -63,21 +93,71 @@ body{
 
 <div class="box">
 
-<h2>Hesabım</h2>
+<h2>👤 Hesabım</h2>
 
 <div class="info">
-    <strong>Kullanıcı Adı:</strong><br>
-    {{ username }}
+
+<strong>Kullanıcı Adı</strong>
+
+<br>
+
+{{ username }}
+
 </div>
 
 <div class="info">
-    <strong>Gmail:</strong><br>
-    {{ email }}
+
+<strong>Gmail</strong>
+
+<br>
+
+{{ email }}
+
 </div>
 
-<a class="button" href="/">Ana Sayfa</a>
+<div class="apps">
 
-<a class="button logout" href="/cikis">Çıkış Yap</a>
+<h3>📦 Yüklediğim Uygulamalar</h3>
+
+{% if apps %}
+
+{% for app in apps %}
+
+<div class="app-item">
+
+<strong>{{ app["name"] }}</strong>
+
+{% if app["filename"] %}
+
+<br>
+
+{{ app["filename"] }}
+
+{% endif %}
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<p style="color:#aaa; margin-top:15px;">
+Henüz uygulama yüklemediniz.
+</p>
+
+{% endif %}
+
+</div>
+
+<a class="button" href="/">
+Ana Sayfa
+</a>
+
+<br>
+
+<a class="button logout" href="/cikis">
+Çıkış Yap
+</a>
 
 </div>
 
