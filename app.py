@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-import socket
+import os
+import requests
 
 app = Flask(__name__)
 
@@ -26,19 +27,38 @@ def destek():
 
 @app.route("/test-mail")
 def test_mail():
+    api_key = os.environ.get("RESEND_API_KEY")
+
+    if not api_key:
+        return "RESEND_API_KEY bulunamadı!", 500
+
     try:
-        socket.create_connection(
-            ("smtp.gmail.com", 587),
-            timeout=10
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "from": "onboarding@resend.dev",
+                "to": ["galatasaray01efe@gmail.com"],
+                "subject": "ReXStudio Test Maili",
+                "text": """Merhaba!
+
+Bu ReXStudio test mailidir.
+
+Resend API üzerinden başarıyla gönderildi."""
+            },
+            timeout=15
         )
 
-        return "Gmail SMTP sunucusuna bağlantı başarılı!"
+        if response.status_code in [200, 201]:
+            return "Mail başarıyla gönderildi!"
+
+        return f"Resend hata verdi: {response.status_code} - {response.text}", 500
 
     except Exception as e:
-        return (
-            f"Gmail SMTP bağlantı hatası: "
-            f"{type(e).__name__} - {e}"
-        ), 500
+        return f"Mail gönderme hatası: {type(e).__name__} - {e}", 500
 
 
 if __name__ == "__main__":
