@@ -93,7 +93,7 @@ def send_code(email, code):
 
 @app.route("/")
 def home():
-    if session.get("logged_in") and session.get("remember_login"):
+    if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
     return render_template("index.html")
@@ -231,7 +231,6 @@ def dogrula():
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
         )
-
         conn.commit()
 
     except sqlite3.IntegrityError:
@@ -266,7 +265,6 @@ def giris():
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
-
     remember = request.form.get("remember") == "on"
 
     if not username or not email:
