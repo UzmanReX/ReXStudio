@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 import os
-import random
+import secrets
 import time
 import sqlite3
 import requests
 
 app = Flask(__name__)
 
-app.secret_key = os.environ.get("SECRET_KEY", "rexstudio-test-secret")
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "rexstudio-development-secret-change-this"
+)
 
 DATABASE = "users.db"
 
@@ -25,7 +28,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
-            email TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -69,13 +72,13 @@ ReXStudio"""
             timeout=15
         )
 
-        if response.status_code in [200, 201]:
+        if response.status_code in (200, 201):
             return True, "OK"
 
         return False, response.text
 
     except Exception as e:
-        return False, str(e)
+        return False, f"{type(e).__name__}: {e}"
 
 
 @app.route("/")
@@ -98,8 +101,15 @@ def destek():
     return render_template("destek.html")
 
 
+# =========================
+# KAYIT
+# =========================
+
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
+
+    if session.get("logged_in"):
+        return redirect(url_for("home"))
 
     if request.method == "GET":
         return render_template("register.html")
@@ -108,24 +118,50 @@ def kayit():
     email = request.form.get("email", "").strip().lower()
 
     if not username or not email:
-        return "Kullanıcı adı ve Gmail zorunludur."
+        return render_template(
+            "register.html",
+            error="Kullanıcı adı ve Gmail alanları zorunludur."
+        )
 
     if not email.endswith("@gmail.com"):
-        return "Lütfen Gmail adresi kullanın."
+        return render_template(
+            "register.html",
+            error="Lütfen geçerli bir Gmail adresi kullanın."
+        )
+
+    if len(username) < 3:
+        return render_template(
+            "register.html",
+            error="Kullanıcı adı en az 3 karakter olmalıdır."
+        )
 
     conn = get_db()
 
-    existing_user = conn.execute(
-        "SELECT * FROM users WHERE username = ? OR email = ?",
-        (username, email)
+    existing_username = conn.execute(
+        "SELECT id FROM users WHERE username = ?",
+        (username,)
+    ).fetchone()
+
+    existing_email = conn.execute(
+        "SELECT id FROM users WHERE email = ?",
+        (email,)
     ).fetchone()
 
     conn.close()
 
-    if existing_user:
-        return "Bu kullanıcı adı veya Gmail zaten kayıtlı."
+    if existing_username:
+        return render_template(
+            "register.html",
+            error="Bu kullanıcı adı zaten kullanılıyor."
+        )
 
-    code = str(random.randint(100000, 999999))
+    if existing_email:
+        return render_template(
+            "register.html",
+            error="Bu Gmail adresi zaten kayıtlı."
+        )
+
+    code = str(secrets.randbelow(900000) + 100000)
 
     session["register_username"] = username
     session["register_email"] = email
@@ -136,9 +172,16 @@ def kayit():
 
     if not success:
         session.clear()
-        return f"Mail gönderilemedi: {message}"
 
-    return redirect(url_for("dogrula"))
+        return render_template(
+            "register.html",
+            error=f"Mail gönderilemedi: {message}"
+        )
+
+    return render_template(
+        "verify.html",
+        success=f"Doğrulama kodu {email} adresine gönderildi."
+    )
 
 
 @app.route("/dogrula", methods=["GET", "POST"])
@@ -157,10 +200,17 @@ def dogrula():
 
     if not code_time or time.time() - code_time > 600:
         session.clear()
-        return "Kodun süresi doldu. Lütfen tekrar kayıt olun."
+
+        return render_template(
+            "register.html",
+            error="Kodun süresi doldu. Lütfen tekrar kayıt olun."
+        )
 
     if entered_code != saved_code:
-        return "Kod yanlış!"
+        return render_template(
+            "verify.html",
+            error="Kod yanlış. Lütfen tekrar kontrol edin."
+        )
 
     username = session["register_username"]
     email = session["register_email"]
@@ -178,17 +228,35 @@ def dogrula():
     except sqlite3.IntegrityError:
         conn.close()
         session.clear()
-        return "Bu kullanıcı zaten kayıtlı."
+
+        return render_template(
+            "register.html",
+            error="Bu kullanıcı adı veya Gmail zaten kayıtlı."
+        )
 
     conn.close()
 
-    session.clear()
+    session.pop("register_code", None)
+    session.pop("register_code_time", None)
+    session.pop("register_username", None)
+    session.pop("register_email", None)
 
-    return "Kayıt başarılı! Artık giriş yapabilirsiniz."
+    return render_template(
+        "verify.html",
+        success="Kayıt başarılı! Hesabınız oluşturuldu.",
+        registered=True
+    )
 
+
+# =========================
+# GİRİŞ
+# =========================
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
+
+    if session.get("logged_in"):
+        return redirect(url_for("home"))
 
     if request.method == "GET":
         return render_template("login.html")
@@ -197,21 +265,30 @@ def giris():
     email = request.form.get("email", "").strip().lower()
 
     if not username or not email:
-        return "Kullanıcı adı ve Gmail zorunludur."
+        return render_template(
+            "login.html",
+            error="Kullanıcı adı ve Gmail alanları zorunludur."
+        )
 
     conn = get_db()
 
     user = conn.execute(
-        "SELECT * FROM users WHERE username = ? AND email = ?",
+        """
+        SELECT * FROM users
+        WHERE username = ? AND email = ?
+        """,
         (username, email)
     ).fetchone()
 
     conn.close()
 
     if not user:
-        return "Kullanıcı adı veya Gmail yanlış."
+        return render_template(
+            "login.html",
+            error="Kullanıcı adı veya Gmail yanlış."
+        )
 
-    code = str(random.randint(100000, 999999))
+    code = str(secrets.randbelow(900000) + 100000)
 
     session["login_username"] = username
     session["login_email"] = email
@@ -222,9 +299,16 @@ def giris():
 
     if not success:
         session.clear()
-        return f"Mail gönderilemedi: {message}"
 
-    return redirect(url_for("login_dogrula"))
+        return render_template(
+            "login.html",
+            error=f"Mail gönderilemedi: {message}"
+        )
+
+    return render_template(
+        "login_verify.html",
+        success=f"Giriş kodu {email} adresine gönderildi."
+    )
 
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
@@ -243,10 +327,17 @@ def login_dogrula():
 
     if not code_time or time.time() - code_time > 600:
         session.clear()
-        return "Kodun süresi doldu. Lütfen tekrar giriş yapın."
+
+        return render_template(
+            "login.html",
+            error="Kodun süresi doldu. Lütfen tekrar giriş yapın."
+        )
 
     if entered_code != saved_code:
-        return "Kod yanlış!"
+        return render_template(
+            "login_verify.html",
+            error="Kod yanlış. Lütfen tekrar kontrol edin."
+        )
 
     username = session["login_username"]
 
@@ -255,6 +346,48 @@ def login_dogrula():
     session["logged_in"] = True
     session["username"] = username
 
+    return render_template(
+        "login_verify.html",
+        success=f"Giriş başarılı! Hoş geldin, {username}.",
+        logged_in=True
+    )
+
+
+# =========================
+# HESAP
+# =========================
+
+@app.route("/hesap")
+def hesap():
+
+    if not session.get("logged_in"):
+        return redirect(url_for("giris"))
+
+    username = session.get("username")
+
+    conn = get_db()
+
+    user = conn.execute(
+        "SELECT username, email FROM users WHERE username = ?",
+        (username,)
+    ).fetchone()
+
+    conn.close()
+
+    if not user:
+        session.clear()
+        return redirect(url_for("giris"))
+
+    return render_template(
+        "account.html",
+        username=user["username"],
+        email=user["email"]
+    )
+
+
+@app.route("/cikis")
+def cikis():
+    session.clear()
     return redirect(url_for("home"))
 
 
