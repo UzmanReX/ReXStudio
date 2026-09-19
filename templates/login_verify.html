@@ -1,16 +1,25 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
+
 <meta charset="UTF-8">
+
 <title>ReXStudio - Giriş Kodu</title>
 
+<link rel="icon" type="image/png" href="/static/rexlogo.png">
+
 <style>
+
 body{
     margin:0;
     height:100vh;
+
     display:flex;
     justify-content:center;
     align-items:center;
+
     background:#050510;
     color:white;
     font-family:Arial;
@@ -19,8 +28,10 @@ body{
 .box{
     background:#111122;
     padding:40px;
+
     border:2px solid cyan;
     box-shadow:0 0 20px cyan;
+
     border-radius:15px;
     text-align:center;
 }
@@ -29,8 +40,10 @@ input{
     width:220px;
     padding:10px;
     margin:10px;
+
     border:none;
     border-radius:8px;
+
     text-align:center;
     font-size:20px;
     letter-spacing:5px;
@@ -40,9 +53,30 @@ button{
     padding:10px 20px;
     background:cyan;
     border:none;
+
     border-radius:10px;
     cursor:pointer;
 }
+
+.error{
+    color:#ff4d4d;
+    margin:15px 0;
+    font-weight:bold;
+}
+
+.success{
+    color:#00ff88;
+    margin:15px 0;
+    font-weight:bold;
+}
+
+.link{
+    display:block;
+    margin-top:20px;
+    color:cyan;
+    text-decoration:none;
+}
+
 </style>
 
 </head>
@@ -52,6 +86,16 @@ button{
 <div class="box">
 
 <h2>Giriş Kodu</h2>
+
+{% if error %}
+<div class="error">{{ error }}</div>
+{% endif %}
+
+{% if success %}
+<div class="success">{{ success }}</div>
+{% endif %}
+
+{% if not logged_in %}
 
 <p>Gmail adresine gönderilen 6 haneli kodu gir.</p>
 
@@ -72,7 +116,15 @@ button{
 
 </form>
 
+{% else %}
+
+<a class="link" href="/">Ana Sayfaya Dön</a>
+
+{% endif %}
+
 </div>
 
 </body>
+
 </html>
+```
