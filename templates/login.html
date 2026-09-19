@@ -47,6 +47,7 @@ input{
 
 button{
     padding:10px 20px;
+
     background:cyan;
     border:none;
 
@@ -60,10 +61,15 @@ button{
     font-weight:bold;
 }
 
-.success{
-    color:#00ff88;
-    margin:15px 0;
-    font-weight:bold;
+.info{
+    color:#bbb;
+    font-size:13px;
+    margin:10px 0 15px;
+}
+
+.remember{
+    width:auto;
+    margin:10px 5px 10px 0;
 }
 
 .link{
@@ -83,12 +89,14 @@ button{
 
 <h2>Gmail ile Giriş</h2>
 
-{% if error %}
-<div class="error">{{ error }}</div>
-{% endif %}
+<p class="info">
+Giriş kodu onboarding@resend.dev tarafından gönderilecektir.
+</p>
 
-{% if success %}
-<div class="success">{{ success }}</div>
+{% if error %}
+<div class="error">
+{{ error }}
+</div>
 {% endif %}
 
 <form method="POST">
@@ -111,11 +119,29 @@ button{
 
 <br>
 
-<button type="submit">Kod Gönder</button>
+<label>
+
+<input
+    class="remember"
+    type="checkbox"
+    name="remember"
+>
+
+Beni Hatırla
+
+</label>
+
+<br>
+
+<button type="submit">
+Kod Gönder
+</button>
 
 </form>
 
-<a class="link" href="/kayit">Hesabın yok mu? Kayıt Ol</a>
+<a class="link" href="/kayit">
+Hesabın yok mu? Kayıt Ol
+</a>
 
 </div>
 
