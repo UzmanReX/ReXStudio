@@ -1,4 +1,4 @@
-```python
+
 from flask import Flask, render_template, request, session, redirect, url_for
 from datetime import timedelta
 import os
@@ -446,4 +446,4 @@ def cikis():
 
 if __name__ == "__main__":
     app.run(debug=True)
-```
+
