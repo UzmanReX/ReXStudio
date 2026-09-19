@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, abort
 from datetime import timedelta
 import os
 import secrets
@@ -6,7 +6,7 @@ import time
 import sqlite3
 import requests
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
 app.secret_key = os.environ.get(
     "SECRET_KEY",
@@ -121,7 +121,6 @@ def destek():
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
-
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
@@ -197,7 +196,6 @@ def kayit():
 
 @app.route("/dogrula", methods=["GET", "POST"])
 def dogrula():
-
     if "register_code" not in session:
         return redirect(url_for("kayit"))
 
@@ -233,7 +231,6 @@ def dogrula():
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
         )
-
         conn.commit()
 
     except sqlite3.IntegrityError:
@@ -260,7 +257,6 @@ def dogrula():
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
-
     if request.method == "GET":
         if session.get("logged_in"):
             return redirect(url_for("hesap"))
@@ -329,7 +325,6 @@ def giris():
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
 def login_dogrula():
-
     if "login_code" not in session:
         return redirect(url_for("giris"))
 
@@ -371,7 +366,6 @@ def login_dogrula():
 
 @app.route("/hesap")
 def hesap():
-
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
@@ -419,6 +413,25 @@ def hesap():
 def cikis():
     session.clear()
     return redirect(url_for("anasayfa"))
+
+
+@app.route("/static/<path:filename>")
+def protected_static(filename):
+    if filename.replace("\\", "/") == "UzmanNotProMax.exe":
+        if not session.get("logged_in"):
+            abort(403)
+
+        return send_from_directory(
+            os.path.join(app.root_path, "static"),
+            "UzmanNotProMax.exe",
+            as_attachment=True,
+            download_name="UzmanNotProMax.exe"
+        )
+
+    return send_from_directory(
+        os.path.join(app.root_path, "static"),
+        filename
+    )
 
 
 if __name__ == "__main__":
