@@ -1,7 +1,5 @@
 from flask import Flask, render_template
-import os
-import smtplib
-from email.mime.text import MIMEText
+import socket
 
 app = Flask(__name__)
 
@@ -28,31 +26,19 @@ def destek():
 
 @app.route("/test-mail")
 def test_mail():
-    gmail = os.environ["GMAIL_ADRESI"]
-    app_password = os.environ["GMAIL_UYGULAMA_SIFRESI"]
-    alici = os.environ["TEST_ALICI"]
+    try:
+        socket.create_connection(
+            ("smtp.gmail.com", 587),
+            timeout=10
+        )
 
-    mesaj = MIMEText(
-        """Merhaba!
+        return "Gmail SMTP sunucusuna bağlantı başarılı!"
 
-Bu ReXStudio test mailidir.
-
-Gmail kod gönderme sistemi çalışıyor.
-""",
-        "plain",
-        "utf-8"
-    )
-
-    mesaj["Subject"] = "ReXStudio Test"
-    mesaj["From"] = gmail
-    mesaj["To"] = alici
-
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(gmail, app_password)
-        server.send_message(mesaj)
-
-    return "Mail başarıyla gönderildi!"
+    except Exception as e:
+        return (
+            f"Gmail SMTP bağlantı hatası: "
+            f"{type(e).__name__} - {e}"
+        ), 500
 
 
 if __name__ == "__main__":
