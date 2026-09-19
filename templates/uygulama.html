@@ -364,6 +364,70 @@ body{
     margin-top:10px;
 }
 
+.max-download-area{
+    position:relative;
+    display:inline-block;
+    margin-top:20px;
+}
+
+.max-download-area .download{
+    display:inline-block;
+    margin-top:0;
+}
+
+.lock-button{
+    position:absolute;
+    left:50%;
+    top:-42px;
+    transform:translateX(-50%);
+
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+    border:1px solid #ff00ff;
+
+    background:#111122;
+    color:#ff00ff;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    box-shadow:
+    0 0 10px #ff00ff,
+    0 0 20px #ff00ff;
+}
+
+.lock-button:hover{
+    transform:translateX(-50%) scale(1.1);
+
+    box-shadow:
+    0 0 15px #ff00ff,
+    0 0 30px #ff00ff;
+}
+
+.lock-message{
+    display:none;
+
+    margin-top:12px;
+
+    color:#ff4d4d;
+
+    font-weight:bold;
+
+    font-size:14px;
+}
+
+.max-download-area.locked .download{
+    opacity:0.45;
+    cursor:not-allowed;
+}
+
+.max-download-area.locked .download:hover{
+    box-shadow:none;
+}
+    
 </style>
 
 </head>
