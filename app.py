@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, session, redirect, url_for
 from datetime import timedelta
 import os
@@ -7,72 +6,104 @@ import time
 import sqlite3
 import requests
 
-app = Flask(__name__)
+app = Flask(**name**)
 
 app.secret_key = os.environ.get(
-    "SECRET_KEY",
-    "rexstudio-development-secret"
+"SECRET_KEY",
+"rexstudio-development-secret"
 )
 
-# Beni Hatırla seçilirse oturum 30 gün kalır
+# "Beni Hatırla" seçilirse oturum 30 gün korunur.
+
 app.permanent_session_lifetime = timedelta(days=30)
 
 DATABASE = "users.db"
 
+# Nylas
+
+NYLAS_API_KEY = os.environ.get("NYLAS_API_KEY")
+NYLAS_DOMAIN = "rexstudio.nylas.email"
+NYLAS_SEND_URL = (
+f"https://api.us.nylas.com/v3/domains/"
+f"{NYLAS_DOMAIN}/messages/send"
+)
 
 def get_db():
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
-    return conn
-
+conn = sqlite3.connect(DATABASE)
+conn.row_factory = sqlite3.Row
+return conn
 
 def init_db():
-    conn = get_db()
+conn = get_db()
 
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            email TEXT UNIQUE NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+```
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
 
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS apps (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL,
-            name TEXT NOT NULL,
-            filename TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
+conn.execute("""
+    CREATE TABLE IF NOT EXISTS apps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        name TEXT NOT NULL,
+        filename TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+""")
 
-    conn.commit()
-    conn.close()
-
+conn.commit()
+conn.close()
+```
 
 init_db()
 
+# =========================
+
+# Nylas ile mail gönder
+
+# =========================
 
 def send_code(email, code):
-    api_key = os.environ.get("RESEND_API_KEY")
+if not NYLAS_API_KEY:
+return False, "NYLAS_API_KEY Render Environment'ta bulunamadı."
 
-    if not api_key:
-        return False, "RESEND_API_KEY bulunamadı."
-
-    try:
-        response = requests.post(
-            "https://api.resend.com/emails",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
+```
+try:
+    response = requests.post(
+        NYLAS_SEND_URL,
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Bearer {NYLAS_API_KEY}",
+            "Content-Type": "application/json",
+            "Idempotency-Key": secrets.token_hex(16)
+        },
+        json={
+            "to": [
+                {
+                    "name": "",
+                    "email": email
+                }
+            ],
+            "from": {
+                "name": "ReXStudio",
+                "email": "noreply@rexstudio.nylas.email"
             },
-            json={
-                "from": "onboarding@resend.dev",
-                "to": [email],
-                "subject": "ReXStudio Doğrulama Kodunuz",
-                "text": f"""Merhaba!
+            "reply_to": [
+                {
+                    "name": "ReXStudio Support",
+                    "email": "rexstudiosupport@gmail.com"
+                }
+            ],
+            "subject": "ReXStudio Doğrulama Kodunuz",
+            "body": f"""
+```
+
+Merhaba!
 
 ReXStudio doğrulama kodunuz:
 
@@ -83,367 +114,495 @@ Bu kod 10 dakika boyunca geçerlidir.
 Kodu siz istemediyseniz bu e-postayı dikkate almayın.
 
 ReXStudio
-Gönderen: onboarding@resend.dev"""
-            },
-            timeout=15
-        )
+"""
+},
+timeout=15
+)
 
-        if response.status_code in (200, 201):
-            return True, "OK"
+```
+    if response.status_code in (200, 202):
+        return True, "OK"
 
-        return False, response.text
+    return False, response.text
 
-    except Exception as e:
-        return False, f"{type(e).__name__}: {e}"
-
+except Exception as e:
+    return False, f"{type(e).__name__}: {e}"
+```
 
 # =========================
+
 # ANA SAYFA
+
 # =========================
 
 @app.route("/")
 def home():
 
-    # Giriş yapılmışsa otomatik Hesabım
-    if session.get("logged_in"):
-        return redirect(url_for("hesap"))
+```
+# Kullanıcı giriş yaptıysa otomatik Hesabım'a gider.
+if session.get("logged_in"):
+    return redirect(url_for("hesap"))
 
-    return render_template("index.html")
-
+return render_template("index.html")
+```
 
 # =========================
+
 # DİĞER SAYFALAR
+
 # =========================
 
 @app.route("/uygulamalar")
 def uygulamalar():
-    return render_template("uygulama.html")
-
+return render_template("uygulama.html")
 
 @app.route("/projeler")
 def projeler():
-    return render_template("projeler.html")
-
+return render_template("projeler.html")
 
 @app.route("/destek")
 def destek():
-    return render_template("destek.html")
-
+return render_template("destek.html")
 
 # =========================
+
 # KAYIT
+
 # =========================
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
 
-    if session.get("logged_in"):
-        return redirect(url_for("hesap"))
+```
+if session.get("logged_in"):
+    return redirect(url_for("hesap"))
 
-    if request.method == "GET":
-        return render_template("register.html")
+if request.method == "GET":
+    return render_template("register.html")
 
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
+username = request.form.get("username", "").strip()
+email = request.form.get("email", "").strip().lower()
 
-    if not username or not email:
-        return render_template(
-            "register.html",
-            error="Kullanıcı adı ve Gmail alanları zorunludur."
-        )
-
-    if not email.endswith("@gmail.com"):
-        return render_template(
-            "register.html",
-            error="Lütfen geçerli bir Gmail adresi kullanın."
-        )
-
-    if len(username) < 3:
-        return render_template(
-            "register.html",
-            error="Kullanıcı adı en az 3 karakter olmalıdır."
-        )
-
-    conn = get_db()
-
-    existing_username = conn.execute(
-        "SELECT id FROM users WHERE username = ?",
-        (username,)
-    ).fetchone()
-
-    existing_email = conn.execute(
-        "SELECT id FROM users WHERE email = ?",
-        (email,)
-    ).fetchone()
-
-    conn.close()
-
-    if existing_username:
-        return render_template(
-            "register.html",
-            error="Bu kullanıcı adı zaten kullanılıyor."
-        )
-
-    if existing_email:
-        return render_template(
-            "register.html",
-            error="Bu Gmail adresi zaten kayıtlı."
-        )
-
-    code = str(secrets.randbelow(900000) + 100000)
-
-    session["register_username"] = username
-    session["register_email"] = email
-    session["register_code"] = code
-    session["register_code_time"] = time.time()
-
-    success, message = send_code(email, code)
-
-    if not success:
-        session.clear()
-
-        return render_template(
-            "register.html",
-            error=f"Mail gönderilemedi: {message}"
-        )
-
+if not username or not email:
     return render_template(
-        "verify.html",
-        success=f"Doğrulama kodu {email} adresine gönderildi."
+        "register.html",
+        error="Kullanıcı adı ve Gmail alanları zorunludur."
     )
 
+if not email.endswith("@gmail.com"):
+    return render_template(
+        "register.html",
+        error="Lütfen geçerli bir Gmail adresi kullanın."
+    )
+
+if len(username) < 3:
+    return render_template(
+        "register.html",
+        error="Kullanıcı adı en az 3 karakter olmalıdır."
+    )
+
+conn = get_db()
+
+existing_username = conn.execute(
+    "SELECT id FROM users WHERE username = ?",
+    (username,)
+).fetchone()
+
+existing_email = conn.execute(
+    "SELECT id FROM users WHERE email = ?",
+    (email,)
+).fetchone()
+
+conn.close()
+
+if existing_username:
+    return render_template(
+        "register.html",
+        error="Bu kullanıcı adı zaten kullanılıyor."
+    )
+
+if existing_email:
+    return render_template(
+        "register.html",
+        error="Bu Gmail adresi zaten kayıtlı."
+    )
+
+code = str(secrets.randbelow(900000) + 100000)
+
+session["register_username"] = username
+session["register_email"] = email
+session["register_code"] = code
+session["register_code_time"] = time.time()
+
+success, message = send_code(email, code)
+
+if not success:
+    session.clear()
+
+    return render_template(
+        "register.html",
+        error=f"Mail gönderilemedi: {message}"
+    )
+
+return render_template(
+    "verify.html",
+    success=f"Doğrulama kodu {email} adresine gönderildi."
+)
+```
 
 @app.route("/dogrula", methods=["GET", "POST"])
 def dogrula():
 
-    if "register_code" not in session:
-        return redirect(url_for("kayit"))
+```
+if "register_code" not in session:
+    return redirect(url_for("kayit"))
 
-    if request.method == "GET":
-        return render_template("verify.html")
+if request.method == "GET":
+    return render_template("verify.html")
 
-    entered_code = request.form.get("code", "").strip()
+entered_code = request.form.get("code", "").strip()
 
-    saved_code = session.get("register_code")
-    code_time = session.get("register_code_time")
+saved_code = session.get("register_code")
+code_time = session.get("register_code_time")
 
-    if not code_time or time.time() - code_time > 600:
-        session.clear()
-
-        return render_template(
-            "register.html",
-            error="Kodun süresi doldu. Lütfen tekrar kayıt olun."
-        )
-
-    if entered_code != saved_code:
-        return render_template(
-            "verify.html",
-            error="Kod yanlış. Lütfen tekrar kontrol edin."
-        )
-
-    username = session["register_username"]
-    email = session["register_email"]
-
-    conn = get_db()
-
-    try:
-        conn.execute(
-            "INSERT INTO users (username, email) VALUES (?, ?)",
-            (username, email)
-        )
-
-        conn.commit()
-
-    except sqlite3.IntegrityError:
-        conn.close()
-        session.clear()
-
-        return render_template(
-            "register.html",
-            error="Bu kullanıcı adı veya Gmail zaten kayıtlı."
-        )
-
-    conn.close()
-
-    session.pop("register_code", None)
-    session.pop("register_code_time", None)
-    session.pop("register_username", None)
-    session.pop("register_email", None)
+if not code_time or time.time() - code_time > 600:
+    session.clear()
 
     return render_template(
-        "verify.html",
-        success="Kayıt başarılı! Hesabınız oluşturuldu.",
-        registered=True
+        "register.html",
+        error="Kodun süresi doldu. Lütfen tekrar kayıt olun."
     )
 
+if entered_code != saved_code:
+    return render_template(
+        "verify.html",
+        error="Kod yanlış. Lütfen tekrar kontrol edin."
+    )
+
+username = session["register_username"]
+email = session["register_email"]
+
+conn = get_db()
+
+try:
+    conn.execute(
+        "INSERT INTO users (username, email) VALUES (?, ?)",
+        (username, email)
+    )
+
+    conn.commit()
+
+except sqlite3.IntegrityError:
+    conn.close()
+    session.clear()
+
+    return render_template(
+        "register.html",
+        error="Bu kullanıcı adı veya Gmail zaten kayıtlı."
+    )
+
+conn.close()
+
+session.pop("register_code", None)
+session.pop("register_code_time", None)
+session.pop("register_username", None)
+session.pop("register_email", None)
+
+return render_template(
+    "verify.html",
+    success="Kayıt başarılı! Hesabınız oluşturuldu.",
+    registered=True
+)
+```
 
 # =========================
+
 # GİRİŞ
+
 # =========================
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
 
-    if session.get("logged_in"):
-        return redirect(url_for("hesap"))
+```
+if session.get("logged_in"):
+    return redirect(url_for("hesap"))
 
-    if request.method == "GET":
-        return render_template("login.html")
+if request.method == "GET":
+    return render_template("login.html")
 
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
+username = request.form.get("username", "").strip()
+email = request.form.get("email", "").strip().lower()
 
-    remember = request.form.get("remember") == "on"
+remember = request.form.get("remember") == "on"
 
-    if not username or not email:
-        return render_template(
-            "login.html",
-            error="Kullanıcı adı ve Gmail alanları zorunludur."
-        )
-
-    conn = get_db()
-
-    user = conn.execute(
-        """
-        SELECT * FROM users
-        WHERE username = ? AND email = ?
-        """,
-        (username, email)
-    ).fetchone()
-
-    conn.close()
-
-    if not user:
-        return render_template(
-            "login.html",
-            error="Kullanıcı adı veya Gmail yanlış."
-        )
-
-    code = str(secrets.randbelow(900000) + 100000)
-
-    session["login_username"] = username
-    session["login_email"] = email
-    session["login_code"] = code
-    session["login_code_time"] = time.time()
-    session["login_remember"] = remember
-
-    success, message = send_code(email, code)
-
-    if not success:
-        session.clear()
-
-        return render_template(
-            "login.html",
-            error=f"Mail gönderilemedi: {message}"
-        )
-
+if not username or not email:
     return render_template(
-        "login_verify.html",
-        success=f"Giriş kodu {email} adresine gönderildi."
+        "login.html",
+        error="Kullanıcı adı ve Gmail alanları zorunludur."
     )
 
+if not email.endswith("@gmail.com"):
+    return render_template(
+        "login.html",
+        error="Lütfen geçerli bir Gmail adresi kullanın."
+    )
+
+conn = get_db()
+
+user = conn.execute(
+    """
+    SELECT * FROM users
+    WHERE username = ? AND email = ?
+    """,
+    (username, email)
+).fetchone()
+
+conn.close()
+
+if not user:
+    return render_template(
+        "login.html",
+        error="Kullanıcı adı veya Gmail yanlış."
+    )
+
+code = str(secrets.randbelow(900000) + 100000)
+
+session["login_username"] = username
+session["login_email"] = email
+session["login_code"] = code
+session["login_code_time"] = time.time()
+session["login_remember"] = remember
+
+success, message = send_code(email, code)
+
+if not success:
+    session.clear()
+
+    return render_template(
+        "login.html",
+        error=f"Mail gönderilemedi: {message}"
+    )
+
+return render_template(
+    "login_verify.html",
+    success=f"Giriş kodu {email} adresine gönderildi."
+)
+```
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
 def login_dogrula():
 
-    if "login_code" not in session:
-        return redirect(url_for("giris"))
+```
+if "login_code" not in session:
+    return redirect(url_for("giris"))
 
-    if request.method == "GET":
-        return render_template("login_verify.html")
+if request.method == "GET":
+    return render_template("login_verify.html")
 
-    entered_code = request.form.get("code", "").strip()
+entered_code = request.form.get("code", "").strip()
 
-    saved_code = session.get("login_code")
-    code_time = session.get("login_code_time")
+saved_code = session.get("login_code")
+code_time = session.get("login_code_time")
 
-    if not code_time or time.time() - code_time > 600:
-        session.clear()
-
-        return render_template(
-            "login.html",
-            error="Kodun süresi doldu. Lütfen tekrar giriş yapın."
-        )
-
-    if entered_code != saved_code:
-        return render_template(
-            "login_verify.html",
-            error="Kod yanlış. Lütfen tekrar kontrol edin."
-        )
-
-    username = session["login_username"]
-    remember = session.get("login_remember", False)
-
+if not code_time or time.time() - code_time > 600:
     session.clear()
 
-    session["logged_in"] = True
-    session["username"] = username
-
-    # Beni Hatırla
-    session.permanent = remember
-
     return render_template(
-        "login_verify.html",
-        success=f"Giriş başarılı! Hoş geldin, {username}.",
-        logged_in=True
+        "login.html",
+        error="Kodun süresi doldu. Lütfen tekrar giriş yapın."
     )
 
+if entered_code != saved_code:
+    return render_template(
+        "login_verify.html",
+        error="Kod yanlış. Lütfen tekrar kontrol edin."
+    )
+
+username = session["login_username"]
+remember = session.get("login_remember", False)
+
+session.clear()
+
+session["logged_in"] = True
+session["username"] = username
+
+# Beni Hatırla
+session.permanent = remember
+
+return render_template(
+    "login_verify.html",
+    success=f"Giriş başarılı! Hoş geldin, {username}.",
+    logged_in=True
+)
+```
 
 # =========================
+
 # HESAP
+
 # =========================
 
 @app.route("/hesap")
 def hesap():
 
-    if not session.get("logged_in"):
-        return redirect(url_for("giris"))
+```
+if not session.get("logged_in"):
+    return redirect(url_for("giris"))
 
-    username = session.get("username")
+username = session.get("username")
 
-    conn = get_db()
+conn = get_db()
 
-    user = conn.execute(
-        "SELECT username, email FROM users WHERE username = ?",
-        (username,)
-    ).fetchone()
+user = conn.execute(
+    "SELECT username, email FROM users WHERE username = ?",
+    (username,)
+).fetchone()
 
-    apps = conn.execute(
-        """
-        SELECT name, filename, created_at
-        FROM apps
-        WHERE username = ?
-        ORDER BY id DESC
-        """,
-        (username,)
-    ).fetchall()
+apps = conn.execute(
+    """
+    SELECT name, filename, created_at
+    FROM apps
+    WHERE username = ?
+    ORDER BY id DESC
+    """,
+    (username,)
+).fetchall()
 
-    conn.close()
+conn.close()
 
-    if not user:
-        session.clear()
-        return redirect(url_for("giris"))
+if not user:
+    session.clear()
+    return redirect(url_for("giris"))
 
-    return render_template(
-        "account.html",
-        username=user["username"],
-        email=user["email"],
-        apps=apps
-    )
-
+return render_template(
+    "account.html",
+    username=user["username"],
+    email=user["email"],
+    apps=apps
+)
+```
 
 # =========================
+
 # ÇIKIŞ
+
 # =========================
 
 @app.route("/cikis")
 def cikis():
 
-    session.clear()
+```
+session.clear()
 
-    return redirect(url_for("home"))
+return redirect(url_for("home"))
+```
 
+if **name** == "**main**":
+app.run(debug=True)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+````
 
+Nylas'ın güncel Transactional Send API'si tam olarak bu domain tabanlı endpoint'i kullanıyor; gönderimde `to`, `from`, `subject` ve `body` alanları bulunuyor. `Idempotency-Key` de güvenli tekrar denemeler için destekleniyor.
+
+---
+
+## 2. GitHub'a kaydet
+
+**Commit changes** yap.
+
+Render otomatik deploy başlatacak.
+
+Bu sefer önemli olan şuna benzer bir sonuç görmek:
+
+```text
+Build successful 🎉
+Running 'gunicorn app:app'
+````
+
+ve ardından:
+
+```text
+Live
+```
+
+---
+
+## 3. Resend artık kullanılmayacak
+
+Render → **Environment**
+
+Şu ikisini artık kullanmıyoruz:
+
+```text
+RESEND_API_KEY
+```
+
+```text
+GMAIL_ADRESI
+GMAIL_UYGULAMA_SIFRESI
+```
+
+İstersen sonradan silebilirsin. Şimdilik kalsalar da sorun olmaz.
+
+Bunun bulunması yeterli:
+
+```text
+NYLAS_API_KEY
+```
+
+---
+
+## 4. Çok önemli: `SECRET_KEY`
+
+Render → **Environment** bölümünde şu da olmalı:
+
+```text
+SECRET_KEY
+```
+
+Değeri daha önce eklediğimiz uzun gizli değer.
+
+---
+
+## 5. Test
+
+Render **Live** olduktan sonra:
+
+```text
+https://rexstudio-6p9g.onrender.com/kayit
+```
+
+aç.
+
+Kendi Gmail'in yerine **başka bir Gmail adresini** yazmayı deneyebilirsin.
+
+Örneğin:
+
+```text
+Kullanıcı Adı: TestKullanici
+Gmail: baska@gmail.com
+```
+
+**Kod Gönder**.
+
+Başarılı olursa mailin gönderen kısmında artık:
+
+```text
+ReXStudio
+noreply@rexstudio.nylas.email
+```
+
+görünmesi gerekir.
+
+Bu, Resend'deki:
+
+```text
+onboarding@resend.dev
+```
+
+göndericisinin tamamen kalktığı anlamına gelir.
+
+### Bir düzeltme daha
+
+Senin istediğin davranışa göre şu an `/` adresi giriş yapılmış kullanıcıyı **otomatik `/hesap` sayfasına atıyor**. Giriş yapılmamış kullanıcı ise ana sayfayı görüyor ve menüde **Giriş Yap / Kayıt Ol** çıkıyor. Bu kısmı özellikle istediğin şekilde bıraktım.
