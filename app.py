@@ -77,7 +77,7 @@ def send_code(email, code):
         try:
             data = response.json()
         except ValueError:
-            return False, f"Google Apps Script geçersiz yanıt verdi: {response.text[:500]}"
+            return False, "Google Apps Script geçersiz yanıt verdi."
 
         if data.get("success") is True:
             return True, "OK"
@@ -93,9 +93,14 @@ def send_code(email, code):
 
 @app.route("/")
 def home():
-    if session.get("logged_in"):
+    if session.get("logged_in") and session.get("remember_login"):
         return redirect(url_for("hesap"))
 
+    return render_template("index.html")
+
+
+@app.route("/anasayfa")
+def anasayfa():
     return render_template("index.html")
 
 
@@ -245,6 +250,7 @@ def dogrula():
     session.permanent = True
     session["logged_in"] = True
     session["username"] = username
+    session["remember_login"] = True
     session["toast"] = "Kayıt olundu"
 
     return redirect(url_for("hesap"))
@@ -351,6 +357,7 @@ def login_dogrula():
     session.permanent = remember
     session["logged_in"] = True
     session["username"] = username
+    session["remember_login"] = remember
     session["toast"] = "Giriş yapıldı"
 
     return redirect(url_for("hesap"))
@@ -404,7 +411,7 @@ def hesap():
 @app.route("/cikis")
 def cikis():
     session.clear()
-    return redirect(url_for("home"))
+    return redirect(url_for("anasayfa"))
 
 
 if __name__ == "__main__":
