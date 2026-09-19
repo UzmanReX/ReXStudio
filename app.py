@@ -93,7 +93,7 @@ def send_code(email, code):
 
 @app.route("/")
 def home():
-    if session.get("logged_in"):
+    if session.get("logged_in") and session.get("remember_login"):
         return redirect(url_for("hesap"))
 
     return render_template("index.html")
@@ -121,6 +121,7 @@ def destek():
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
+
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
@@ -196,6 +197,7 @@ def kayit():
 
 @app.route("/dogrula", methods=["GET", "POST"])
 def dogrula():
+
     if "register_code" not in session:
         return redirect(url_for("kayit"))
 
@@ -231,6 +233,7 @@ def dogrula():
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
         )
+
         conn.commit()
 
     except sqlite3.IntegrityError:
@@ -257,11 +260,15 @@ def dogrula():
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
-    if session.get("logged_in"):
-        return redirect(url_for("hesap"))
 
     if request.method == "GET":
+        if session.get("logged_in"):
+            return redirect(url_for("hesap"))
+
         return render_template("login.html")
+
+    if session.get("logged_in"):
+        return redirect(url_for("hesap"))
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
@@ -322,6 +329,7 @@ def giris():
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
 def login_dogrula():
+
     if "login_code" not in session:
         return redirect(url_for("giris"))
 
@@ -363,6 +371,7 @@ def login_dogrula():
 
 @app.route("/hesap")
 def hesap():
+
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
