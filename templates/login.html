@@ -1,5 +1,5 @@
-
 <!DOCTYPE html>
+
 <html lang="tr">
 
 <head>
@@ -52,19 +52,26 @@ button{
     border:none;
 
     border-radius:10px;
+
     cursor:pointer;
 }
 
 .error{
     color:#ff4d4d;
+
     margin:15px 0;
+
     font-weight:bold;
 }
 
 .info{
     color:#bbb;
+
     font-size:13px;
+
     margin:10px 0 15px;
+
+    line-height:1.5;
 }
 
 .remember{
@@ -74,9 +81,20 @@ button{
 
 .link{
     display:block;
+
     margin-top:20px;
+
     color:cyan;
+
     text-decoration:none;
+}
+
+.success{
+    color:#00ff88;
+
+    margin:15px 0;
+
+    font-weight:bold;
 }
 
 </style>
@@ -90,31 +108,44 @@ button{
 <h2>Gmail ile Giriş</h2>
 
 <p class="info">
-Giriş kodu onboarding@resend.dev tarafından gönderilecektir.
+Giriş kodu <strong>noreply@rexstudio.nylas.email</strong>
+tarafından gönderilecektir.
 </p>
 
 {% if error %}
+
 <div class="error">
 {{ error }}
 </div>
+
+{% endif %}
+
+{% if success %}
+
+<div class="success">
+{{ success }}
+</div>
+
 {% endif %}
 
 <form method="POST">
 
 <input
-    type="text"
-    name="username"
-    placeholder="Kullanıcı Adı"
-    required
+type="text"
+name="username"
+placeholder="Kullanıcı Adı"
+required
+
 >
 
 <br>
 
 <input
-    type="email"
-    name="email"
-    placeholder="Gmail"
-    required
+type="email"
+name="email"
+placeholder="Gmail"
+required
+
 >
 
 <br>
@@ -122,9 +153,10 @@ Giriş kodu onboarding@resend.dev tarafından gönderilecektir.
 <label>
 
 <input
-    class="remember"
-    type="checkbox"
-    name="remember"
+class="remember"
+type="checkbox"
+name="remember"
+
 >
 
 Beni Hatırla
