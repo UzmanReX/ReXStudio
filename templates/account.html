@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>ReXStudio - Hesabım</title>
+
+<link rel="icon" type="image/png" href="/static/rexlogo.png">
+
+<style>
+
+body{
+    margin:0;
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#050510;
+    color:white;
+    font-family:Arial;
+}
+
+.box{
+    background:#111122;
+    padding:40px;
+
+    border:2px solid cyan;
+    box-shadow:0 0 20px cyan;
+
+    border-radius:15px;
+    text-align:center;
+}
+
+.info{
+    margin:15px;
+}
+
+.button{
+    display:inline-block;
+    padding:10px 20px;
+    margin:8px;
+
+    background:cyan;
+    color:black;
+
+    border-radius:10px;
+    text-decoration:none;
+}
+
+.logout{
+    background:#ff4d4d;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Hesabım</h2>
+
+<div class="info">
+    <strong>Kullanıcı Adı:</strong><br>
+    {{ username }}
+</div>
+
+<div class="info">
+    <strong>Gmail:</strong><br>
+    {{ email }}
+</div>
+
+<a class="button" href="/">Ana Sayfa</a>
+
+<a class="button logout" href="/cikis">Çıkış Yap</a>
+
+</div>
+
+</body>
+
+</html>
