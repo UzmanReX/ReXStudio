@@ -161,8 +161,10 @@ body{
     display:flex;
     align-items:center;
     gap:8px;
+
     color:red !important;
     font-weight:bold;
+
     border:1px solid red;
 
     box-shadow:
@@ -178,7 +180,9 @@ body{
 }
 
 .yt-btn:hover{
+
     transform:scale(1.08);
+
     background:rgba(255,0,0,0.1);
 
     box-shadow:
@@ -205,6 +209,7 @@ body{
 .account-btn{
     color:cyan !important;
     font-weight:bold;
+
     border:1px solid cyan;
 
     box-shadow:
@@ -214,6 +219,7 @@ body{
 
 .account-btn:hover{
     color:white !important;
+
     background:rgba(0,255,255,0.1);
 
     box-shadow:
@@ -223,6 +229,7 @@ body{
 
 .register-btn{
     color:#ff00ff !important;
+
     border:1px solid #ff00ff;
 
     box-shadow:
@@ -232,6 +239,7 @@ body{
 
 .register-btn:hover{
     color:white !important;
+
     background:rgba(255,0,255,0.1);
 
     box-shadow:
@@ -241,6 +249,7 @@ body{
 
 .logout-btn{
     color:red !important;
+
     border:1px solid red;
 
     box-shadow:
@@ -250,6 +259,7 @@ body{
 
 .logout-btn:hover{
     color:white !important;
+
     background:rgba(255,0,0,0.1);
 
     box-shadow:
@@ -259,7 +269,7 @@ body{
 
 .container{
     width:100%;
-    max-width:1200px;
+    max-width:1100px;
     margin:auto;
     padding:100px 20px;
     text-align:center;
@@ -274,78 +284,80 @@ body{
     0 0 35px cyan;
 }
 
-.projects{
-    display:flex;
-    justify-content:center;
-    gap:40px;
-    flex-wrap:wrap;
-    margin-top:60px;
-}
-
-.project-card{
-    width:340px;
-    background:#111122;
-    border-radius:25px;
-    padding:30px;
-    border:1px solid rgba(255,255,255,0.1);
-    transition:0.4s;
-}
-
-.project-card:hover{
-    transform:translateY(-10px) scale(1.03);
-    border:1px solid yellow;
-
-    box-shadow:
-    0 0 20px yellow,
-    0 0 40px yellow;
-}
-
-.dev-btn{
-    display:inline-block;
+.subtitle{
     margin-top:20px;
-    padding:14px 25px;
-    background:rgba(255,255,0,0.1);
-    color:yellow;
-    border:1px solid yellow;
-    border-radius:14px;
-    font-weight:bold;
-    text-decoration:none;
-    transition:0.3s;
-
-    box-shadow:
-    0 0 10px yellow,
-    0 0 20px rgba(255,255,0,0.5);
+    color:#aaa;
+    font-size:18px;
 }
 
-.dev-btn:hover{
-    transform:scale(1.08);
-    background:yellow;
-    color:black;
+.support-box{
+    width:100%;
+    max-width:650px;
+    margin:60px auto 0;
+
+    background:#111122;
+
+    border-radius:25px;
+
+    padding:40px;
+
+    border:1px solid rgba(255,255,255,0.1);
+
+    transition:0.4s;
 
     box-shadow:
-    0 0 25px yellow,
-    0 0 50px yellow;
+    0 0 15px rgba(0,255,255,0.15);
 }
 
-.project-card h2{
-    margin-bottom:20px;
+.support-box:hover{
+
+    transform:translateY(-8px);
+
+    border:1px solid cyan;
+
+    box-shadow:
+    0 0 20px cyan,
+    0 0 40px cyan;
+}
+
+.support-box h2{
     color:white;
     font-size:30px;
+    margin-bottom:20px;
 }
 
-.project-card p{
+.support-box p{
     color:#bbb;
     line-height:1.7;
-    margin-top:15px;
+    margin-bottom:20px;
 }
 
-.status{
-    margin-top:20px;
-    color:lime;
+.email-box{
+    display:inline-block;
+
+    margin-top:15px;
+
+    padding:15px 25px;
+
+    color:cyan;
+
+    border:1px solid cyan;
+
+    border-radius:14px;
+
+    background:rgba(0,255,255,0.08);
+
     font-weight:bold;
 
-    text-shadow:
-    0 0 10px lime;
+    box-shadow:
+    0 0 10px cyan,
+    0 0 20px rgba(0,255,255,0.3);
+}
+
+.support-note{
+    margin-top:25px;
+    color:#888;
+    font-size:14px;
 }
 
 </style>
@@ -372,13 +384,21 @@ body{
 
 <div class="menu">
 
-<a href="/anasayfa">Ana Sayfa</a>
+<a href="/anasayfa">
+Ana Sayfa
+</a>
 
-<a href="/uygulamalar">Uygulamalar</a>
+<a href="/uygulamalar">
+Uygulamalar
+</a>
 
-<a href="/projeler">Projeler</a>
+<a href="/projeler">
+Projeler
+</a>
 
-<a href="/destek">İletişim</a>
+<a href="/destek">
+İletişim
+</a>
 
 <a class="yt-btn"
 href="http://www.youtube.com/@UzmanReX"
@@ -418,26 +438,28 @@ Kayıt Ol
 
 <div class="container">
 
-<h1>Projeler</h1>
+<h1>Destek</h1>
 
-<div class="projects">
-
-<div class="project-card">
-
-<h2>⏱ Kronometre</h2>
-
-<a class="dev-btn" href="#">
-Yapım Aşamasında Olan Uygulama
-</a>
-
-<p>
-Modern tasarımlı gelişmiş kronometre.
+<p class="subtitle">
+ReXStudio hakkında yardım ve destek almak için bizimle iletişime geçebilirsiniz.
 </p>
 
-<div class="status">
-⚡ Geliştiriliyor...
+<div class="support-box">
+
+<h2>📩 ReXStudio Destek</h2>
+
+<p>
+Bir sorun yaşadıysanız, uygulamalar hakkında soru sormak
+istiyorsanız veya herhangi bir konuda destek gerekiyorsa
+bizimle iletişime geçebilirsiniz.
+</p>
+
+<div class="email-box">
+rexstudiosupport@gmail.com
 </div>
 
+<div class="support-note">
+Öneri taleplerinizi bu e-posta adresine gönderebilirsiniz.
 </div>
 
 </div>
