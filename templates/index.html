@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="tr">
 
@@ -8,10 +9,9 @@
 
 <title>ReX Studıo</title>
 <link rel="icon" type="image/png" href="/static/rexlogo.png">
-    
+
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
@@ -22,27 +22,18 @@ body{
     font-family:Arial;
     background:#050510;
     color:white;
-
     overflow-x:hidden;
-
     padding-top:90px;
 }
 
-/* 🌌 NEON BACKGROUND */
 .bg{
     position:fixed;
-
     width:500px;
     height:500px;
-
     border-radius:50%;
-
     filter:blur(140px);
-
     opacity:0.25;
-
     z-index:-2;
-
     animation:move 12s infinite alternate ease-in-out;
 }
 
@@ -56,7 +47,6 @@ body{
     background:#ff00ff;
     bottom:-150px;
     right:-150px;
-
     animation-delay:2s;
 }
 
@@ -64,7 +54,6 @@ body{
     background:yellow;
     top:40%;
     left:30%;
-
     animation-delay:4s;
 }
 
@@ -80,35 +69,24 @@ body{
 
 }
 
-/* 🌠 PARÇACIKLAR */
 .particles{
     position:fixed;
-
     top:0;
     left:0;
-
     width:100%;
     height:100%;
-
     overflow:hidden;
-
     z-index:-3;
 }
 
 .particle{
     position:absolute;
-
     width:4px;
     height:4px;
-
     background:cyan;
-
     border-radius:50%;
-
     opacity:0.7;
-
     box-shadow:0 0 10px cyan;
-
     animation:floatParticle linear infinite;
 }
 
@@ -124,49 +102,34 @@ body{
 
 }
 
-/* NAVBAR */
 .navbar{
     position:fixed;
     top:0;
     left:0;
-
     width:100%;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:18px 40px;
-
     background:rgba(10,10,20,0.85);
-
     backdrop-filter:blur(12px);
-
     border-bottom:1px solid cyan;
-
     z-index:1000;
 }
 
-/* LOGO */
 .logo{
-
     display:flex;
     align-items:center;
     gap:12px;
-
     font-size:28px;
     font-weight:bold;
-
     color:cyan;
-
     text-shadow:0 0 15px cyan;
 }
 
 .logo img{
-
     width:40px;
     height:40px;
-
     border-radius:10px;
 
     box-shadow:
@@ -174,7 +137,6 @@ body{
     0 0 20px cyan;
 }
 
-/* MENU */
 .menu{
     display:flex;
     align-items:center;
@@ -183,25 +145,20 @@ body{
 
 .menu a{
     color:white;
-
     text-decoration:none;
-
     padding:8px 15px;
-
     border-radius:10px;
-
     transition:0.3s;
 }
 
 .menu a:hover{
     color:cyan;
-
     background:rgba(0,255,255,0.1);
-
     box-shadow:0 0 15px cyan;
 }
 
-/* 🔴 YOUTUBE */
+/* YOUTUBE */
+
 .yt-btn{
     display:flex;
     align-items:center;
@@ -252,7 +209,69 @@ body{
 
 }
 
-/* HERO */
+/* HESAP */
+
+.account-btn{
+    color:cyan !important;
+    font-weight:bold;
+
+    border:1px solid cyan;
+
+    box-shadow:
+    0 0 8px cyan,
+    0 0 15px cyan;
+}
+
+.account-btn:hover{
+    color:white !important;
+
+    background:rgba(0,255,255,0.1);
+
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.register-btn{
+    color:#ff00ff !important;
+
+    border:1px solid #ff00ff;
+
+    box-shadow:
+    0 0 8px #ff00ff,
+    0 0 15px #ff00ff;
+}
+
+.register-btn:hover{
+    color:white !important;
+
+    background:rgba(255,0,255,0.1);
+
+    box-shadow:
+    0 0 15px #ff00ff,
+    0 0 30px #ff00ff;
+}
+
+.logout-btn{
+    color:red !important;
+
+    border:1px solid red;
+
+    box-shadow:
+    0 0 8px red,
+    0 0 15px red;
+}
+
+.logout-btn:hover{
+    color:white !important;
+
+    background:rgba(255,0,0,0.1);
+
+    box-shadow:
+    0 0 15px red,
+    0 0 30px red;
+}
+
 .hero{
 
     min-height:80vh;
@@ -299,7 +318,6 @@ body{
     font-size:20px;
 }
 
-/* KARTLAR */
 .cards{
 
     display:flex;
@@ -328,7 +346,6 @@ body{
     border:1px solid rgba(255,255,255,0.1);
 }
 
-/* RGB CARD */
 .rgb-card:hover{
 
     transform:translateY(-10px);
@@ -361,7 +378,6 @@ body{
 
 }
 
-/* RED CARD */
 .red-card:hover{
 
     transform:translateY(-10px);
@@ -419,15 +435,12 @@ body{
 
 <body>
 
-<!-- 🌌 -->
 <div class="bg bg1"></div>
 <div class="bg bg2"></div>
 <div class="bg bg3"></div>
 
-<!-- 🌠 -->
 <div class="particles" id="particles"></div>
 
-<!-- NAVBAR -->
 <nav class="navbar">
 
 <div class="logo">
@@ -458,11 +471,32 @@ YouTube
 
 </a>
 
+{% if session.get("logged_in") %}
+
+<a class="account-btn" href="/hesap">
+👤 {{ session.get("username") }}
+</a>
+
+<a class="logout-btn" href="/cikis">
+Çıkış
+</a>
+
+{% else %}
+
+<a class="account-btn" href="/giris">
+Giriş Yap
+</a>
+
+<a class="register-btn" href="/kayit">
+Kayıt Ol
+</a>
+
+{% endif %}
+
 </div>
 
 </nav>
 
-<!-- HERO -->
 <section class="hero">
 
 <h1>UzmanReX</h1>
@@ -475,7 +509,6 @@ ReX Studio tarafından geliştirilen uygulamalar.
 
 </section>
 
-<!-- KARTLAR -->
 <section class="cards">
 
 <div class="card rgb-card">
@@ -484,7 +517,6 @@ ReX Studio tarafından geliştirilen uygulamalar.
 
 <p>
 Gelişmiş özelliklere sahip premium not alma sistemi.
-
 </p>
 
 <a href="/uygulamalar">
@@ -509,7 +541,6 @@ Git
 
 </section>
 
-<!-- JS -->
 <script>
 
 const particles = document.getElementById("particles");
@@ -541,3 +572,4 @@ for(let i = 0; i < 120; i++){
 </body>
 
 </html>
+```
