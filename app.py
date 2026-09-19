@@ -17,13 +17,8 @@ app.permanent_session_lifetime = timedelta(days=30)
 
 DATABASE = "users.db"
 
-NYLAS_API_KEY = os.environ.get("NYLAS_API_KEY")
-NYLAS_DOMAIN = "rexstudio.nylas.email"
-
-NYLAS_SEND_URL = (
-    f"https://api.us.nylas.com/v3/domains/"
-    f"{NYLAS_DOMAIN}/messages/send"
-)
+GMAIL_SCRIPT_URL = os.environ.get("GMAIL_SCRIPT_URL")
+GMAIL_SCRIPT_SECRET = os.environ.get("GMAIL_SCRIPT_SECRET")
 
 
 def get_db():
@@ -62,57 +57,35 @@ init_db()
 
 
 def send_code(email, code):
-    if not NYLAS_API_KEY:
-        return False, "NYLAS_API_KEY Render Environment'ta bulunamadı."
+    if not GMAIL_SCRIPT_URL:
+        return False, "GMAIL_SCRIPT_URL bulunamadı."
+
+    if not GMAIL_SCRIPT_SECRET:
+        return False, "GMAIL_SCRIPT_SECRET bulunamadı."
 
     try:
         response = requests.post(
-            NYLAS_SEND_URL,
-            headers={
-                "Accept": "application/json",
-                "Authorization": f"Bearer {NYLAS_API_KEY}",
-                "Content-Type": "application/json",
-                "Idempotency-Key": secrets.token_hex(16)
-            },
+            GMAIL_SCRIPT_URL,
             json={
-                "to": [
-                    {
-                        "name": "",
-                        "email": email
-                    }
-                ],
-                "from": {
-                    "name": "ReXStudio",
-                    "email": "noreply@rexstudio.nylas.email"
-                },
-                "reply_to": [
-                    {
-                        "name": "ReXStudio Support",
-                        "email": "rexstudiosupport@gmail.com"
-                    }
-                ],
-                "subject": "ReXStudio Doğrulama Kodunuz",
-                "body": f"""Merhaba!
-
-Bu ReXStudio doğrulama mailidir.
-
-Doğrulama kodunuz:
-
-{code}
-
-Bu kod 10 dakika boyunca geçerlidir.
-
-Kodu siz istemediyseniz bu e-postayı dikkate almayın.
-
-ReXStudio"""
+                "secret": GMAIL_SCRIPT_SECRET,
+                "email": email,
+                "code": code
             },
-            timeout=15
+            timeout=30
         )
 
-        if response.status_code in (200, 202):
+        try:
+            data = response.json()
+        except ValueError:
+            return False, f"Google Apps Script geçersiz yanıt verdi: {response.text[:500]}"
+
+        if data.get("success") is True:
             return True, "OK"
 
-        return False, response.text
+        return False, data.get("error", "Mail gönderilemedi.")
+
+    except requests.RequestException as e:
+        return False, f"Bağlantı hatası: {e}"
 
     except Exception as e:
         return False, f"{type(e).__name__}: {e}"
@@ -306,7 +279,8 @@ def giris():
 
     user = conn.execute(
         """
-        SELECT * FROM users
+        SELECT *
+        FROM users
         WHERE LOWER(username) = LOWER(?)
         AND LOWER(email) = LOWER(?)
         """,
