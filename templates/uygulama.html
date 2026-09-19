@@ -5,14 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Uygulamalar | ReX Studıo</title>
-
 <title>ReXStudio - Uygulamalar</title>
 <link rel="icon" type="image/png" href="/static/rexlogo.png">
 
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
@@ -27,20 +24,14 @@ body{
     padding-top:100px;
 }
 
-/* 🌌 NEON BACKGROUND */
 .bg{
     position:fixed;
     width:500px;
     height:500px;
-
     border-radius:50%;
-
     filter:blur(140px);
-
     opacity:0.25;
-
     z-index:-2;
-
     animation:move 12s infinite alternate ease-in-out;
 }
 
@@ -54,7 +45,6 @@ body{
     background:#ff00ff;
     bottom:-150px;
     right:-150px;
-
     animation-delay:2s;
 }
 
@@ -62,7 +52,6 @@ body{
     background:yellow;
     top:40%;
     left:30%;
-
     animation-delay:4s;
 }
 
@@ -78,35 +67,24 @@ body{
 
 }
 
-/* 🌠 PARÇACIKLAR */
 .particles{
     position:fixed;
-
     top:0;
     left:0;
-
     width:100%;
     height:100%;
-
     overflow:hidden;
-
     z-index:-3;
 }
 
 .particle{
     position:absolute;
-
     width:4px;
     height:4px;
-
     background:cyan;
-
     border-radius:50%;
-
     opacity:0.7;
-
     box-shadow:0 0 10px cyan;
-
     animation:floatParticle linear infinite;
 }
 
@@ -122,48 +100,34 @@ body{
 
 }
 
-/* NAVBAR */
 .navbar{
     position:fixed;
     top:0;
     left:0;
-
     width:100%;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:18px 40px;
-
     background:rgba(10,10,20,0.85);
-
     backdrop-filter:blur(12px);
-
     border-bottom:1px solid cyan;
-
     z-index:1000;
 }
 
 .logo{
-
     display:flex;
     align-items:center;
     gap:12px;
-
     font-size:28px;
     font-weight:bold;
-
     color:cyan;
-
     text-shadow:0 0 15px cyan;
 }
 
 .logo img{
-
     width:40px;
     height:40px;
-
     border-radius:10px;
 
     box-shadow:
@@ -173,34 +137,32 @@ body{
 
 .menu{
     display:flex;
+    align-items:center;
     gap:20px;
 }
 
 .menu a{
     color:white;
-
     text-decoration:none;
-
     padding:8px 15px;
-
     border-radius:10px;
-
     transition:0.3s;
 }
 
 .menu a:hover{
     color:cyan;
-
+    background:rgba(0,255,255,0.1);
     box-shadow:0 0 15px cyan;
 }
 
-/* 🔴 YOUTUBE */
 .yt-btn{
     display:flex;
     align-items:center;
     gap:8px;
 
     color:red !important;
+
+    font-weight:bold;
 
     border:1px solid red;
 
@@ -249,7 +211,67 @@ body{
 
 }
 
-/* BAŞLIK */
+.account-btn{
+    color:cyan !important;
+    font-weight:bold;
+
+    border:1px solid cyan;
+
+    box-shadow:
+    0 0 8px cyan,
+    0 0 15px cyan;
+}
+
+.account-btn:hover{
+    color:white !important;
+
+    background:rgba(0,255,255,0.1);
+
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.register-btn{
+    color:#ff00ff !important;
+
+    border:1px solid #ff00ff;
+
+    box-shadow:
+    0 0 8px #ff00ff,
+    0 0 15px #ff00ff;
+}
+
+.register-btn:hover{
+    color:white !important;
+
+    background:rgba(255,0,255,0.1);
+
+    box-shadow:
+    0 0 15px #ff00ff,
+    0 0 30px #ff00ff;
+}
+
+.logout-btn{
+    color:red !important;
+
+    border:1px solid red;
+
+    box-shadow:
+    0 0 8px red,
+    0 0 15px red;
+}
+
+.logout-btn:hover{
+    color:white !important;
+
+    background:rgba(255,0,0,0.1);
+
+    box-shadow:
+    0 0 15px red,
+    0 0 30px red;
+}
+
 .title{
     text-align:center;
     margin-bottom:50px;
@@ -265,7 +287,6 @@ body{
     0 0 40px cyan;
 }
 
-/* APP STORE */
 .apps{
     display:flex;
 
@@ -307,7 +328,6 @@ body{
     0 0 40px cyan;
 }
 
-/* APP ICON */
 .app-icon{
     width:90px;
     height:90px;
@@ -319,19 +339,16 @@ body{
     box-shadow:0 0 20px cyan;
 }
 
-/* APP NAME */
 .app-card h2{
     color:white;
     margin-bottom:10px;
 }
 
-/* STARS */
 .stars{
     color:gold;
     margin-bottom:15px;
 }
 
-/* BUTTON */
 .download{
     display:inline-block;
 
@@ -350,6 +367,12 @@ body{
     font-weight:bold;
 
     transition:0.3s;
+
+    border:none;
+
+    font-family:Arial;
+
+    font-size:16px;
 }
 
 .download:hover{
@@ -359,9 +382,13 @@ body{
     0 0 40px cyan;
 }
 
-.status{
-    color:#aaa;
-    margin-top:10px;
+.locked-download{
+    opacity:0.45;
+    cursor:not-allowed;
+}
+
+.locked-download:hover{
+    box-shadow:none;
 }
 
 .max-download-area{
@@ -371,23 +398,28 @@ body{
 }
 
 .max-download-area .download{
-    display:inline-block;
     margin-top:0;
 }
 
 .lock-button{
     position:absolute;
+
     left:50%;
-    top:-42px;
+
+    top:-48px;
+
     transform:translateX(-50%);
 
     width:38px;
+
     height:38px;
 
     border-radius:50%;
+
     border:1px solid #ff00ff;
 
     background:#111122;
+
     color:#ff00ff;
 
     font-size:18px;
@@ -400,6 +432,7 @@ body{
 }
 
 .lock-button:hover{
+
     transform:translateX(-50%) scale(1.1);
 
     box-shadow:
@@ -417,32 +450,27 @@ body{
     font-weight:bold;
 
     font-size:14px;
+
+    line-height:1.4;
 }
 
-.max-download-area.locked .download{
-    opacity:0.45;
-    cursor:not-allowed;
+.status{
+    color:#aaa;
+    margin-top:10px;
 }
 
-.max-download-area.locked .download:hover{
-    box-shadow:none;
-}
-    
 </style>
 
 </head>
 
 <body>
 
-<!-- 🌌 BACKGROUND -->
 <div class="bg bg1"></div>
 <div class="bg bg2"></div>
 <div class="bg bg3"></div>
 
-<!-- 🌠 PARTICLES -->
 <div class="particles" id="particles"></div>
 
-<!-- NAVBAR -->
 <nav class="navbar">
 
 <div class="logo">
@@ -456,8 +484,11 @@ body{
 <div class="menu">
 
 <a href="/anasayfa">Ana Sayfa</a>
+
 <a href="/uygulamalar">Uygulamalar</a>
+
 <a href="/projeler">Projeler</a>
+
 <a href="/destek">İletişim</a>
 
 <a class="yt-btn"
@@ -470,25 +501,45 @@ YouTube
 
 </a>
 
+{% if session.get("logged_in") %}
+
+<a class="account-btn" href="/hesap">
+👤 {{ session.get("username") }}
+</a>
+
+<a class="logout-btn" href="/cikis">
+Çıkış
+</a>
+
+{% else %}
+
+<a class="account-btn" href="/giris">
+Giriş Yap
+</a>
+
+<a class="register-btn" href="/kayit">
+Kayıt Ol
+</a>
+
+{% endif %}
+
 </div>
 
 </nav>
 
-<!-- TITLE -->
 <div class="title">
 
 <h1>APP STORE</h1>
 
 </div>
 
-<!-- APPS -->
 <div class="apps">
 
-<!-- APP 1 -->
 <div class="app-card">
 
 <img class="app-icon"
 src="/static/uzmannot.png">
+
 <h2>UzmanNot📝</h2>
 
 <div class="stars">★★★★★</div>
@@ -504,12 +555,11 @@ Sürüm 1.0
 <a class="download"
    href="/static/UzmanNotPro.exe"
    download>
-    İndir
+İndir
 </a>
 
 </div>
 
-<!-- APP 2 -->
 <div class="app-card">
 
 <img class="app-icon"
@@ -527,18 +577,67 @@ Gelişmiş özelliklere sahip premium not alma sistemi.
 Sürüm 2.0 MAX
 </div>
 
+{% if session.get("logged_in") %}
+
+<div class="max-download-area">
+
 <a class="download"
-   href="/static/UzmanNotProMax.exe"
-   download>
-    İndir
+   href="/indir/uzmannotpromax">
+İndir
 </a>
 
 </div>
 
+{% else %}
+
+<div class="max-download-area">
+
+<button
+    class="download locked-download"
+    type="button">
+İndir
+</button>
+
+<button
+    class="lock-button"
+    type="button"
+    onclick="showMaxLoginMessage()">
+🔒
+</button>
+
+<div
+    id="max-login-message"
+    class="lock-message">
+Sadece giriş yapanlar indirebilir.
 </div>
 
-<!-- JS -->
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
 <script>
+
+function showMaxLoginMessage(){
+
+    const message =
+        document.getElementById("max-login-message");
+
+    if(!message){
+        return;
+    }
+
+    message.style.display = "block";
+
+    setTimeout(function(){
+
+        message.style.display = "none";
+
+    }, 5000);
+}
 
 const particles = document.getElementById("particles");
 
@@ -567,4 +666,5 @@ for(let i = 0; i < 120; i++){
 </script>
 
 </body>
+
 </html>
