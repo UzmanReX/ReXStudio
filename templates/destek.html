@@ -6,13 +6,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ReXStudio - İletişim</title>
+<title>ReXStudio - Destek</title>
+
 <link rel="icon" type="image/png" href="/static/rexlogo.png">
-<title>Destek - ReX Studıo</title>
 
 <style>
 
-/* RESET */
 *{
     margin:0;
     padding:0;
@@ -23,27 +22,18 @@ body{
     font-family:Arial;
     background:#050510;
     color:white;
-
     overflow-x:hidden;
-
     padding-top:90px;
 }
 
-/* 🌌 NEON BACKGROUND */
 .bg{
     position:fixed;
-
     width:500px;
     height:500px;
-
     border-radius:50%;
-
     filter:blur(140px);
-
     opacity:0.25;
-
     z-index:-2;
-
     animation:move 12s infinite alternate ease-in-out;
 }
 
@@ -57,7 +47,6 @@ body{
     background:#ff00ff;
     bottom:-150px;
     right:-150px;
-
     animation-delay:2s;
 }
 
@@ -65,7 +54,6 @@ body{
     background:yellow;
     top:40%;
     left:30%;
-
     animation-delay:4s;
 }
 
@@ -81,35 +69,24 @@ body{
 
 }
 
-/* 🌠 PARÇACIKLAR */
 .particles{
     position:fixed;
-
     top:0;
     left:0;
-
     width:100%;
     height:100%;
-
     overflow:hidden;
-
     z-index:-3;
 }
 
 .particle{
     position:absolute;
-
     width:4px;
     height:4px;
-
     background:cyan;
-
     border-radius:50%;
-
     opacity:0.7;
-
     box-shadow:0 0 10px cyan;
-
     animation:floatParticle linear infinite;
 }
 
@@ -125,49 +102,34 @@ body{
 
 }
 
-/* NAVBAR */
 .navbar{
     position:fixed;
     top:0;
     left:0;
-
     width:100%;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     padding:18px 40px;
-
     background:rgba(10,10,20,0.85);
-
     backdrop-filter:blur(12px);
-
     border-bottom:1px solid cyan;
-
     z-index:1000;
 }
 
-/* LOGO */
 .logo{
-
     display:flex;
     align-items:center;
     gap:12px;
-
     font-size:28px;
     font-weight:bold;
-
     color:cyan;
-
     text-shadow:0 0 15px cyan;
 }
 
 .logo img{
-
     width:40px;
     height:40px;
-
     border-radius:10px;
 
     box-shadow:
@@ -175,7 +137,6 @@ body{
     0 0 20px cyan;
 }
 
-/* MENU */
 .menu{
     display:flex;
     align-items:center;
@@ -184,34 +145,24 @@ body{
 
 .menu a{
     color:white;
-
     text-decoration:none;
-
     padding:8px 15px;
-
     border-radius:10px;
-
     transition:0.3s;
 }
 
 .menu a:hover{
     color:cyan;
-
     background:rgba(0,255,255,0.1);
-
     box-shadow:0 0 15px cyan;
 }
 
-/* 🔴 YOUTUBE */
 .yt-btn{
     display:flex;
     align-items:center;
     gap:8px;
-
     color:red !important;
-
     font-weight:bold;
-
     border:1px solid red;
 
     box-shadow:
@@ -227,9 +178,7 @@ body{
 }
 
 .yt-btn:hover{
-
     transform:scale(1.08);
-
     background:rgba(255,0,0,0.1);
 
     box-shadow:
@@ -253,79 +202,150 @@ body{
 
 }
 
-/* İÇERİK */
-.container{
+.account-btn{
+    color:cyan !important;
+    font-weight:bold;
+    border:1px solid cyan;
 
-    width:100%;
-    max-width:1000px;
-
-    margin:auto;
-
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-
-    text-align:center;
-
-    padding:100px 20px;
+    box-shadow:
+    0 0 8px cyan,
+    0 0 15px cyan;
 }
 
-/* BAŞLIK */
-h1{
+.account-btn:hover{
+    color:white !important;
+    background:rgba(0,255,255,0.1);
 
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.register-btn{
+    color:#ff00ff !important;
+    border:1px solid #ff00ff;
+
+    box-shadow:
+    0 0 8px #ff00ff,
+    0 0 15px #ff00ff;
+}
+
+.register-btn:hover{
+    color:white !important;
+    background:rgba(255,0,255,0.1);
+
+    box-shadow:
+    0 0 15px #ff00ff,
+    0 0 30px #ff00ff;
+}
+
+.logout-btn{
+    color:red !important;
+    border:1px solid red;
+
+    box-shadow:
+    0 0 8px red,
+    0 0 15px red;
+}
+
+.logout-btn:hover{
+    color:white !important;
+    background:rgba(255,0,0,0.1);
+
+    box-shadow:
+    0 0 15px red,
+    0 0 30px red;
+}
+
+.container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:100px 20px;
+    text-align:center;
+}
+
+.container h1{
     font-size:60px;
-
-    color:red;
+    color:cyan;
 
     text-shadow:
-    0 0 15px red,
-    0 0 35px red;
+    0 0 15px cyan,
+    0 0 35px cyan;
 }
 
-/* YAZI */
-p{
+.projects{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    margin-top:60px;
+}
 
+.project-card{
+    width:340px;
+    background:#111122;
+    border-radius:25px;
+    padding:30px;
+    border:1px solid rgba(255,255,255,0.1);
+    transition:0.4s;
+}
+
+.project-card:hover{
+    transform:translateY(-10px) scale(1.03);
+    border:1px solid yellow;
+
+    box-shadow:
+    0 0 20px yellow,
+    0 0 40px yellow;
+}
+
+.dev-btn{
+    display:inline-block;
     margin-top:20px;
-
-    font-size:22px;
-
-    color:#ccc;
-}
-
-/* BUTTON */
-button{
-
-    margin-top:40px;
-
-    padding:15px 35px;
-
-    background:red;
-
-    color:white;
-
-    border:none;
-
-    border-radius:15px;
-
-    font-size:18px;
+    padding:14px 25px;
+    background:rgba(255,255,0,0.1);
+    color:yellow;
+    border:1px solid yellow;
+    border-radius:14px;
     font-weight:bold;
-
-    cursor:pointer;
-
+    text-decoration:none;
     transition:0.3s;
 
     box-shadow:
-    0 0 20px red,
-    0 0 40px rgba(255,0,0,0.5);
+    0 0 10px yellow,
+    0 0 20px rgba(255,255,0,0.5);
 }
 
-button:hover{
-
+.dev-btn:hover{
     transform:scale(1.08);
+    background:yellow;
+    color:black;
 
     box-shadow:
-    0 0 30px red,
-    0 0 60px red;
+    0 0 25px yellow,
+    0 0 50px yellow;
+}
+
+.project-card h2{
+    margin-bottom:20px;
+    color:white;
+    font-size:30px;
+}
+
+.project-card p{
+    color:#bbb;
+    line-height:1.7;
+    margin-top:15px;
+}
+
+.status{
+    margin-top:20px;
+    color:lime;
+    font-weight:bold;
+
+    text-shadow:
+    0 0 10px lime;
 }
 
 </style>
@@ -334,15 +354,12 @@ button:hover{
 
 <body>
 
-<!-- 🌌 BACKGROUND -->
 <div class="bg bg1"></div>
 <div class="bg bg2"></div>
 <div class="bg bg3"></div>
 
-<!-- 🌠 PARTICLES -->
 <div class="particles" id="particles"></div>
 
-<!-- NAVBAR -->
 <nav class="navbar">
 
 <div class="logo">
@@ -373,30 +390,60 @@ YouTube
 
 </a>
 
+{% if session.get("logged_in") %}
+
+<a class="account-btn" href="/hesap">
+👤 {{ session.get("username") }}
+</a>
+
+<a class="logout-btn" href="/cikis">
+Çıkış
+</a>
+
+{% else %}
+
+<a class="account-btn" href="/giris">
+Giriş Yap
+</a>
+
+<a class="register-btn" href="/kayit">
+Kayıt Ol
+</a>
+
+{% endif %}
+
 </div>
 
 </nav>
 
-<!-- İÇERİK -->
 <div class="container">
 
-<h1>Destek</h1>
+<h1>Projeler</h1>
+
+<div class="projects">
+
+<div class="project-card">
+
+<h2>⏱ Kronometre</h2>
+
+<a class="dev-btn" href="#">
+Yapım Aşamasında Olan Uygulama
+</a>
 
 <p>
-Buradan ReX Studio ile iletişime geçebilirsiniz
+Modern tasarımlı gelişmiş kronometre.
 </p>
 
-<a href="mailto:uzmanrex@gmail.com">
-
-<button>
-Mesaj Gönder
-</button>
-
-</a>
+<div class="status">
+⚡ Geliştiriliyor...
+</div>
 
 </div>
 
-<!-- JS -->
+</div>
+
+</div>
+
 <script>
 
 const particles = document.getElementById("particles");
