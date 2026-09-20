@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, abort, make_response
 from datetime import timedelta
 import os
@@ -87,23 +86,16 @@ def init_db():
         VALUES (1, 0, 0)
     """)
 
-    conn.execute("""
-        INSERT OR IGNORE INTO download_stats
-        (app_name, download_count)
-        VALUES ('UzmanNotPro.exe', 0)
-    """)
-
-    conn.execute("""
-        INSERT OR IGNORE INTO download_stats
-        (app_name, download_count)
-        VALUES ('UzmanNotProMax.exe', 0)
-    """)
-
-    conn.execute("""
-        INSERT OR IGNORE INTO download_stats
-        (app_name, download_count)
-        VALUES ('ReX.Launcher.exe', 0)
-    """)
+    for app_name in [
+        "UzmanNotPro.exe",
+        "UzmanNotProMax.exe",
+        "ReX.Launcher.exe"
+    ]:
+        conn.execute("""
+            INSERT OR IGNORE INTO download_stats
+            (app_name, download_count)
+            VALUES (?, 0)
+        """, (app_name,))
 
     conn.commit()
     conn.close()
@@ -317,6 +309,7 @@ def kayit():
     ).strip().lower()
 
     if not username or not email:
-
         return render_template(
-            "register.html"
+            "register.html",
+            error="Kullanıcı adı ve e-posta zorunludur."
+        )
