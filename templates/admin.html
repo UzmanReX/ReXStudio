@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>ReXStudio - Yönetici Paneli</title>
+
+<link rel="icon" type="image/png" href="/static/rexlogo.png">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    min-height:100vh;
+
+    background:#050510;
+
+    color:white;
+
+    font-family:Arial;
+
+    padding:40px;
+}
+
+.container{
+    max-width:1100px;
+
+    margin:auto;
+}
+
+.title{
+    text-align:center;
+
+    margin-bottom:40px;
+}
+
+.title h1{
+    color:cyan;
+
+    font-size:45px;
+
+    text-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.title p{
+    color:#aaa;
+}
+
+.stats{
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-bottom:35px;
+}
+
+.stat{
+    background:#111122;
+
+    border:1px solid cyan;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    text-align:center;
+
+    box-shadow:
+    0 0 15px rgba(0,255,255,0.2);
+}
+
+.stat-icon{
+    font-size:30px;
+}
+
+.stat-number{
+    margin-top:10px;
+
+    font-size:32px;
+
+    color:cyan;
+
+    font-weight:bold;
+}
+
+.stat-title{
+    margin-top:8px;
+
+    color:#aaa;
+}
+
+.panel{
+    background:#111122;
+
+    border:1px solid rgba(0,255,255,0.4);
+
+    border-radius:15px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+}
+
+.panel h2{
+    color:cyan;
+
+    margin-top:0;
+}
+
+.user{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:13px;
+
+    margin-top:10px;
+
+    background:#080812;
+
+    border:1px solid rgba(0,255,255,0.2);
+
+    border-radius:10px;
+}
+
+.username{
+    color:white;
+
+    font-weight:bold;
+}
+
+.date{
+    color:#777;
+
+    font-size:12px;
+}
+
+.download{
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:15px;
+
+    margin-top:10px;
+
+    background:#080812;
+
+    border:1px solid rgba(0,255,255,0.2);
+
+    border-radius:10px;
+}
+
+.download-name{
+    color:white;
+
+    font-weight:bold;
+}
+
+.download-count{
+    color:#00ff88;
+
+    font-weight:bold;
+}
+
+.buttons{
+    text-align:center;
+
+    margin-top:30px;
+}
+
+.button{
+    display:inline-block;
+
+    padding:12px 25px;
+
+    margin:5px;
+
+    background:cyan;
+
+    color:black;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+}
+
+.button:hover{
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.logout{
+    background:red;
+    color:white;
+}
+
+.empty{
+    color:#777;
+
+    text-align:center;
+
+    padding:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">
+
+<h1>🛡️ Yönetici Paneli</h1>
+
+<p>ReXStudio sistem istatistikleri</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-icon">
+👥
+</div>
+
+<div class="stat-number">
+{{ users|length }}
+</div>
+
+<div class="stat-title">
+Kayıtlı Kullanıcı
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-icon">
+👁️
+</div>
+
+<div class="stat-number">
+{{ stats["total_visits"] }}
+</div>
+
+<div class="stat-title">
+Toplam Ziyaret
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-icon">
+🟢
+</div>
+
+<div class="stat-number">
+{{ stats["unique_visitors"] }}
+</div>
+
+<div class="stat-title">
+Benzersiz Ziyaretçi
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-icon">
+📥
+</div>
+
+<div class="stat-number">
+{{ total_downloads }}
+</div>
+
+<div class="stat-title">
+Toplam Uygulama İndirme
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>👥 Kayıtlı Kullanıcılar</h2>
+
+{% if users %}
+
+{% for user in users %}
+
+<div class="user">
+
+<div class="username">
+👤 {{ user["username"] }}
+</div>
+
+<div class="date">
+{{ user["created_at"] }}
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="empty">
+Henüz kayıtlı kullanıcı yok.
+</div>
+
+{% endif %}
+
+</div>
+
+
+<div class="panel">
+
+<h2>📥 Uygulama İndirmeleri</h2>
+
+{% if download_stats %}
+
+{% for item in download_stats %}
+
+<div class="download">
+
+<div class="download-name">
+📦 {{ item["app_name"] }}
+</div>
+
+<div class="download-count">
+{{ item["download_count"] }} indirme
+</div>
+
+</div>
+
+{% endfor %}
+
+{% else %}
+
+<div class="empty">
+Henüz indirme yok.
+</div>
+
+{% endif %}
+
+</div>
+
+
+<div class="buttons">
+
+<a class="button" href="/hesap">
+👤 Hesabım
+</a>
+
+<a class="button" href="/anasayfa">
+Ana Sayfa
+</a>
+
+<a class="button logout" href="/cikis">
+Çıkış Yap
+</a>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
