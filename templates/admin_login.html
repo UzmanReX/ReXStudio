@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>ReXStudio - Yönetici Girişi</title>
+
+<link rel="icon" type="image/png" href="/static/rexlogo.png">
+
+<style>
+
+body{
+    margin:0;
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:#050510;
+    color:white;
+
+    font-family:Arial;
+}
+
+.box{
+    width:350px;
+
+    padding:40px;
+
+    background:#111122;
+
+    border:2px solid cyan;
+
+    border-radius:15px;
+
+    text-align:center;
+
+    box-shadow:
+    0 0 20px cyan,
+    0 0 40px rgba(0,255,255,0.3);
+}
+
+h1{
+    color:cyan;
+
+    text-shadow:
+    0 0 10px cyan,
+    0 0 20px cyan;
+}
+
+input{
+    width:100%;
+
+    padding:13px;
+
+    margin-top:20px;
+
+    box-sizing:border-box;
+
+    background:#080812;
+
+    color:white;
+
+    border:1px solid cyan;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:16px;
+}
+
+input:focus{
+    box-shadow:
+    0 0 10px cyan;
+}
+
+button{
+    width:100%;
+
+    padding:13px;
+
+    margin-top:20px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:cyan;
+
+    color:black;
+
+    font-weight:bold;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+button:hover{
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
+}
+
+.error{
+    margin-top:15px;
+
+    padding:10px;
+
+    color:#ff5555;
+
+    border:1px solid red;
+
+    border-radius:8px;
+
+    background:rgba(255,0,0,0.08);
+}
+
+.back{
+    display:inline-block;
+
+    margin-top:20px;
+
+    color:#aaa;
+
+    text-decoration:none;
+}
+
+.back:hover{
+    color:cyan;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h1>🛡️ Yönetici</h1>
+
+<p style="color:#aaa;">
+Yönetici şifrenizi girin.
+</p>
+
+{% if error %}
+
+<div class="error">
+{{ error }}
+</div>
+
+{% endif %}
+
+<form method="POST">
+
+<input
+    type="password"
+    name="password"
+    placeholder="Yönetici Şifresi"
+    required
+    autocomplete="off"
+>
+
+<button type="submit">
+Yönetici Olarak Giriş
+</button>
+
+</form>
+
+<a class="back" href="/hesap">
+← Hesabıma Dön
+</a>
+
+</div>
+
+</body>
+
+</html>
