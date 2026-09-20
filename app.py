@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, abort
+
+from flask import Flask, render_template, request, session, redirect, url_for, send_from_directory, abort, make_response
 from datetime import timedelta
 import os
 import secrets
 import time
 import sqlite3
 import requests
+import uuid
 
 app = Flask(__name__, static_folder=None)
 
@@ -20,6 +22,9 @@ DATABASE = "users.db"
 GMAIL_SCRIPT_URL = os.environ.get("GMAIL_SCRIPT_URL")
 GMAIL_SCRIPT_SECRET = os.environ.get("GMAIL_SCRIPT_SECRET")
 
+# Yönetici şifresi
+ADMIN_PASSWORD = "12555564"
+
 
 def get_db():
     conn = sqlite3.connect(DATABASE)
@@ -30,6 +35,7 @@ def get_db():
 def init_db():
     conn = get_db()
 
+    # KULLANICILAR
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,6 +45,7 @@ def init_db():
         )
     """)
 
+    # KULLANICILARIN YÜKLEDİĞİ UYGULAMALAR
     conn.execute("""
         CREATE TABLE IF NOT EXISTS apps (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,6 +55,53 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+
+    # GENEL İSTATİSTİKLER
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS site_stats (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            total_visits INTEGER NOT NULL DEFAULT 0,
+            unique_visitors INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+
+    # UYGULAMA İNDİRME İSTATİSTİKLERİ
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS download_stats (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            app_name TEXT UNIQUE NOT NULL,
+            download_count INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+
+    # BENZERSİZ ZİYARETÇİLER
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS visitors (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            visitor_id TEXT UNIQUE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # İLK İSTATİSTİK SATIRI
+    conn.execute("""
+        INSERT OR IGNORE INTO site_stats
+        (id, total_visits, unique_visitors)
+        VALUES (1, 0, 0)
+    """)
+
+    # UYGULAMALARIN İNDİRME SAYACI
+    conn.execute("""
+        INSERT OR IGNORE INTO download_stats
+        (app_name, download_count)
+        VALUES (?, 0)
+    """, ("UzmanNotPro.exe",))
+
+    conn.execute("""
+        INSERT OR IGNORE INTO download_stats
+        (app_name, download_count)
+        VALUES (?, 0)
+    """, ("UzmanNotProMax.exe",))
 
     conn.commit()
     conn.close()
@@ -91,6 +145,122 @@ def send_code(email, code):
         return False, f"{type(e).__name__}: {e}"
 
 
+# =========================================================
+# ZİYARET İSTATİSTİKLERİ
+# =========================================================
+
+def record_visit():
+    """
+    Gerçek sayfa ziyaretlerini kaydeder.
+    CSS, JS, resim gibi static dosyalar buraya girmez.
+    """
+
+    visitor_id = request.cookies.get("rex_visitor_id")
+
+    if not visitor_id:
+        visitor_id = str(uuid.uuid4())
+
+        conn = get_db()
+
+        try:
+            conn.execute(
+                """
+                INSERT INTO visitors (visitor_id)
+                VALUES (?)
+                """,
+                (visitor_id,)
+            )
+
+            conn.execute(
+                """
+                UPDATE site_stats
+                SET
+                    total_visits = total_visits + 1,
+                    unique_visitors = unique_visitors + 1
+                WHERE id = 1
+                """
+            )
+
+            conn.commit()
+
+        finally:
+            conn.close()
+
+        return visitor_id
+
+    conn = get_db()
+
+    conn.execute(
+        """
+        UPDATE site_stats
+        SET total_visits = total_visits + 1
+        WHERE id = 1
+        """
+    )
+
+    conn.commit()
+    conn.close()
+
+    return visitor_id
+
+
+def render_page(template_name, **kwargs):
+    """
+    Sayfa ziyaretini kaydedip sayfayı gösterir.
+    """
+
+    visitor_id = record_visit()
+
+    response = make_response(
+        render_template(template_name, **kwargs)
+    )
+
+    # İlk kez gelen ziyaretçiye benzersiz ID ver.
+    if not request.cookies.get("rex_visitor_id"):
+        response.set_cookie(
+            "rex_visitor_id",
+            visitor_id,
+            max_age=60 * 60 * 24 * 365,
+            httponly=True,
+            samesite="Lax"
+        )
+
+    return response
+
+
+# =========================================================
+# UYGULAMA İNDİRME İSTATİSTİĞİ
+# =========================================================
+
+def record_download(app_name):
+    conn = get_db()
+
+    conn.execute(
+        """
+        INSERT OR IGNORE INTO download_stats
+        (app_name, download_count)
+        VALUES (?, 0)
+        """,
+        (app_name,)
+    )
+
+    conn.execute(
+        """
+        UPDATE download_stats
+        SET download_count = download_count + 1
+        WHERE app_name = ?
+        """,
+        (app_name,)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+# =========================================================
+# STATIC
+# =========================================================
+
 @app.route("/static/<path:filename>")
 def static_files(filename):
     return send_from_directory(
@@ -99,33 +269,42 @@ def static_files(filename):
     )
 
 
+# =========================================================
+# ANA SAYFALAR
+# =========================================================
+
 @app.route("/")
 def home():
+
     if session.get("logged_in") and session.get("remember_login"):
         return redirect(url_for("hesap"))
 
-    return render_template("index.html")
+    return render_page("index.html")
 
 
 @app.route("/anasayfa")
 def anasayfa():
-    return render_template("index.html")
+    return render_page("index.html")
 
 
 @app.route("/uygulamalar")
 def uygulamalar():
-    return render_template("uygulama.html")
+    return render_page("uygulama.html")
 
 
 @app.route("/projeler")
 def projeler():
-    return render_template("projeler.html")
+    return render_page("projeler.html")
 
 
 @app.route("/destek")
 def destek():
-    return render_template("destek.html")
+    return render_page("destek.html")
 
+
+# =========================================================
+# KAYIT
+# =========================================================
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
@@ -134,7 +313,7 @@ def kayit():
         return redirect(url_for("hesap"))
 
     if request.method == "GET":
-        return render_template("register.html")
+        return render_page("register.html")
 
     username = request.form.get("username", "").strip()
     email = request.form.get("email", "").strip().lower()
@@ -210,7 +389,7 @@ def dogrula():
         return redirect(url_for("kayit"))
 
     if request.method == "GET":
-        return render_template("verify.html")
+        return render_page("verify.html")
 
     entered_code = request.form.get("code", "").strip()
 
@@ -237,6 +416,7 @@ def dogrula():
     conn = get_db()
 
     try:
+
         conn.execute(
             "INSERT INTO users (username, email) VALUES (?, ?)",
             (username, email)
@@ -245,6 +425,7 @@ def dogrula():
         conn.commit()
 
     except sqlite3.IntegrityError:
+
         conn.close()
         session.clear()
 
@@ -266,6 +447,10 @@ def dogrula():
     return redirect(url_for("hesap"))
 
 
+# =========================================================
+# GİRİŞ
+# =========================================================
+
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
 
@@ -274,7 +459,7 @@ def giris():
         if session.get("logged_in"):
             return redirect(url_for("hesap"))
 
-        return render_template("login.html")
+        return render_page("login.html")
 
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
@@ -344,7 +529,7 @@ def login_dogrula():
         return redirect(url_for("giris"))
 
     if request.method == "GET":
-        return render_template("login_verify.html")
+        return render_page("login_verify.html")
 
     entered_code = request.form.get("code", "").strip()
 
@@ -368,16 +553,23 @@ def login_dogrula():
     username = session["login_username"]
     remember = session.get("login_remember", False)
 
+    # Giriş doğrulamasından sonra sadece geçici doğrulama
+    # bilgilerini temizliyoruz.
     session.clear()
 
     session.permanent = remember
     session["logged_in"] = True
     session["username"] = username
     session["remember_login"] = remember
+    session["is_admin"] = False
     session["toast"] = "Giriş yapıldı"
 
     return redirect(url_for("hesap"))
 
+
+# =========================================================
+# HESABIM
+# =========================================================
 
 @app.route("/hesap")
 def hesap():
@@ -416,14 +608,110 @@ def hesap():
 
     toast = session.pop("toast", None)
 
-    return render_template(
+    return render_page(
         "account.html",
         username=user["username"],
         email=user["email"],
         apps=apps,
+        is_admin=session.get("is_admin", False),
         toast=toast
     )
 
+
+# =========================================================
+# YÖNETİCİ GİRİŞİ
+# =========================================================
+
+@app.route("/yonetici-giris", methods=["GET", "POST"])
+def yonetici_giris():
+
+    if not session.get("logged_in"):
+        return redirect(url_for("giris"))
+
+    if session.get("is_admin"):
+        return redirect(url_for("yonetici"))
+
+    if request.method == "GET":
+        return render_page("admin_login.html")
+
+    password = request.form.get("password", "")
+
+    if password != ADMIN_PASSWORD:
+        return render_template(
+            "admin_login.html",
+            error="Yönetici şifresi yanlış."
+        )
+
+    session["is_admin"] = True
+    session["toast"] = "Yönetici olarak giriş yapıldı."
+
+    return redirect(url_for("yonetici"))
+
+
+# =========================================================
+# YÖNETİCİ PANELİ
+# =========================================================
+
+@app.route("/yonetici")
+def yonetici():
+
+    if not session.get("logged_in"):
+        return redirect(url_for("giris"))
+
+    if not session.get("is_admin"):
+        abort(403)
+
+    conn = get_db()
+
+    # Kullanıcılar
+    users = conn.execute(
+        """
+        SELECT username, created_at
+        FROM users
+        ORDER BY id DESC
+        """
+    ).fetchall()
+
+    # Site istatistikleri
+    stats = conn.execute(
+        """
+        SELECT total_visits, unique_visitors
+        FROM site_stats
+        WHERE id = 1
+        """
+    ).fetchone()
+
+    # İndirme istatistikleri
+    download_stats = conn.execute(
+        """
+        SELECT app_name, download_count
+        FROM download_stats
+        ORDER BY download_count DESC
+        """
+    ).fetchall()
+
+    # Toplam indirme
+    total_downloads = conn.execute(
+        """
+        SELECT COALESCE(SUM(download_count), 0)
+        FROM download_stats
+        """
+    ).fetchone()[0]
+
+    conn.close()
+
+    return render_page(
+        "admin.html",
+        users=users,
+        stats=stats,
+        download_stats=download_stats,
+        total_downloads=total_downloads
+    )
+
+
+# =========================================================
+# UZMAN NOT PRO MAX İNDİRME
+# =========================================================
 
 @app.route("/indir/uzmannotpromax")
 def indir_uzmannotpromax():
@@ -444,6 +732,9 @@ def indir_uzmannotpromax():
     if not os.path.isfile(file_path):
         abort(404)
 
+    # Dosya gerçekten mevcutsa indirme sayısını artır.
+    record_download("UzmanNotProMax.exe")
+
     return send_from_directory(
         downloads_folder,
         "UzmanNotProMax.exe",
@@ -452,11 +743,8 @@ def indir_uzmannotpromax():
     )
 
 
-@app.route("/cikis")
-def cikis():
-    session.clear()
-    return redirect(url_for("anasayfa"))
+# =========================================================
+# UZMAN NOT İNDİRME
+# =========================================================
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+@a
