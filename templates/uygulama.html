@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="tr">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -701,19 +703,20 @@ Kayıt Ol
 
 <div class="info-area">
 
-    <div class="info-button">
-        i
-    </div>
+<div class="info-button">
+i
+</div>
 
-    <div class="info-tooltip">
-        Şüpheli indirme sayılabilir yinede indire basınız.
-    </div>
+<div class="info-tooltip">
+Şüpheli indirme sayılabilir yinede indire basınız.
+</div>
 
 </div>
 
 <img
-    class="app-icon"
-    src="/static/uzmannot.png"
+class="app-icon"
+src="/static/uzmannot.png"
+
 >
 
 <h2>UzmanNot📝</h2>
@@ -731,15 +734,15 @@ Sürüm 1.0
 </div>
 
 <a
-    class="download"
-    href="/static/UzmanNotPro.exe"
-    download
+class="download"
+href="/static/UzmanNotPro.exe"
+download
+
 >
-İndir
-</a>
+
+İndir </a>
 
 </div>
-
 
 <!-- UZMAN NOT PRO MAX -->
 
@@ -747,19 +750,20 @@ Sürüm 1.0
 
 <div class="info-area">
 
-    <div class="info-button">
-        i
-    </div>
+<div class="info-button">
+i
+</div>
 
-    <div class="info-tooltip">
-        Şüpheli indirme sayılabilir yinede indire basınız.
-    </div>
+<div class="info-tooltip">
+Şüpheli indirme sayılabilir yinede indire basınız.
+</div>
 
 </div>
 
 <img
-    class="app-icon"
-    src="/static/uzmannotmax.png"
+class="app-icon"
+src="/static/uzmannotmax.png"
+
 >
 
 <h2>UzmanNot Pro MAX💎</h2>
@@ -776,110 +780,4 @@ Gelişmiş özelliklere sahip premium not alma sistemi.
 Sürüm 2.0 MAX
 </div>
 
-{% if session.get("logged_in") %}
-
-<div class="max-download-area">
-
-<a
-    class="download"
-    href="/indir/uzmannotpromax"
->
-İndir
-</a>
-
-</div>
-
-{% else %}
-
-<div class="max-download-area">
-
-<button
-    class="download locked-download"
-    type="button"
->
-İndir
-</button>
-
-<button
-    class="lock-button"
-    type="button"
-    onclick="showMaxLoginMessage()"
->
-🔒
-</button>
-
-<div
-    id="max-login-message"
-    class="lock-message"
->
-Sadece giriş yapanlar indirebilir.
-</div>
-
-</div>
-
-{% endif %}
-
-</div>
-
-</div>
-
-<script>
-
-/* KİLİT MESAJI */
-
-function showMaxLoginMessage(){
-
-    const message =
-        document.getElementById("max-login-message");
-
-    if(!message){
-        return;
-    }
-
-    message.style.display = "block";
-
-    setTimeout(function(){
-
-        message.style.display = "none";
-
-    },5000);
-
-}
-
-
-/* PARÇACIKLAR */
-
-const particles =
-    document.getElementById("particles");
-
-for(let i = 0; i < 120; i++){
-
-    const p =
-        document.createElement("div");
-
-    p.classList.add("particle");
-
-    p.style.left =
-        Math.random() * 100 + "vw";
-
-    p.style.animationDuration =
-        (4 + Math.random() * 8) + "s";
-
-    p.style.opacity =
-        Math.random();
-
-    p.style.width =
-        (2 + Math.random() * 5) + "px";
-
-    p.style.height =
-        p.style.width;
-
-    particles.appendChild(p);
-
-}
-
-</script>
-
-</body>
-
-</html>
+{% if
