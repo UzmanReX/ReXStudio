@@ -780,4 +780,217 @@ Gelişmiş özelliklere sahip premium not alma sistemi.
 Sürüm 2.0 MAX
 </div>
 
-{% if
+{% if session.get("logged_in") %}
+
+<div class="max-download-area">
+
+<a
+class="download"
+href="/indir/uzmannotpromax"
+
+>
+
+İndir </a>
+
+</div>
+
+{% else %}
+
+<div class="max-download-area">
+
+<button
+class="download locked-download"
+type="button"
+
+>
+
+İndir </button>
+
+<button
+class="lock-button"
+type="button"
+onclick="showMaxLoginMessage()"
+
+>
+
+🔒 </button>
+
+<div
+id="max-login-message"
+class="lock-message"
+>
+Sadece giriş yapanlar indirebilir.
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+<!-- REX LAUNCHER -->
+
+<div class="app-card">
+
+<div class="info-area">
+
+<div class="info-button">
+i
+</div>
+
+<div class="info-tooltip">
+Bilgisayara Global kısayol ekleme.
+</div>
+
+</div>
+
+<img
+class="app-icon"
+src="/static/rexlogo.png"
+
+>
+
+<h2>ReX Launcher</h2>
+
+<div class="stars">
+★★★★★
+</div>
+
+<p>
+Bilgisayara Global kısayol ekleme
+</p>
+
+<div class="status">
+Sürüm 1.0.0
+</div>
+
+{% if session.get("logged_in") %}
+
+<div class="max-download-area">
+
+<a
+class="download"
+href="/indir/rex-launcher"
+
+>
+
+İndir </a>
+
+</div>
+
+{% else %}
+
+<div class="max-download-area">
+
+<button
+class="download locked-download"
+type="button"
+
+>
+
+İndir </button>
+
+<button
+class="lock-button"
+type="button"
+onclick="showLauncherLoginMessage()"
+
+>
+
+🔒 </button>
+
+<div
+id="launcher-login-message"
+class="lock-message"
+>
+Sadece giriş yapanlar indirebilir.
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<script>
+
+/* KİLİT MESAJI */
+
+function showMaxLoginMessage(){
+
+    const message =
+        document.getElementById("max-login-message");
+
+    if(!message){
+        return;
+    }
+
+    message.style.display = "block";
+
+    setTimeout(function(){
+
+        message.style.display = "none";
+
+    },5000);
+
+}
+
+
+function showLauncherLoginMessage(){
+
+    const message =
+        document.getElementById("launcher-login-message");
+
+    if(!message){
+        return;
+    }
+
+    message.style.display = "block";
+
+    setTimeout(function(){
+
+        message.style.display = "none";
+
+    },5000);
+
+}
+
+
+/* PARÇACIKLAR */
+
+const particles =
+    document.getElementById("particles");
+
+for(let i = 0; i < 120; i++){
+
+    const p =
+        document.createElement("div");
+
+    p.classList.add("particle");
+
+    p.style.left =
+        Math.random() * 100 + "vw";
+
+    p.style.animationDuration =
+        (4 + Math.random() * 8) + "s";
+
+    p.style.opacity =
+        Math.random();
+
+    p.style.width =
+        (2 + Math.random() * 5) + "px";
+
+    p.style.height =
+        p.style.width;
+
+    particles.appendChild(p);
+
+}
+
+</script>
+
+</body>
+
+</html>
