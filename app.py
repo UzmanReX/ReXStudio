@@ -93,6 +93,12 @@ def init_db():
         VALUES ('UzmanNotProMax.exe', 0)
     """)
 
+    conn.execute("""
+        INSERT OR IGNORE INTO download_stats
+        (app_name, download_count)
+        VALUES ('ReX.Launcher.exe', 0)
+    """)
+
     conn.commit()
     conn.close()
 
@@ -126,7 +132,10 @@ def send_code(email, code):
         if data.get("success") is True:
             return True, "OK"
 
-        return False, data.get("error", "Mail gönderilemedi.")
+        return False, data.get(
+            "error",
+            "Mail gönderilemedi."
+        )
 
     except requests.RequestException as e:
         return False, f"Bağlantı hatası: {e}"
@@ -249,15 +258,21 @@ def destek():
 
 @app.route("/kayit", methods=["GET", "POST"])
 def kayit():
-
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
     if request.method == "GET":
         return page("register.html")
 
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
+    username = request.form.get(
+        "username",
+        ""
+    ).strip()
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
 
     if not username or not email:
         return render_template(
@@ -303,14 +318,19 @@ def kayit():
             error="Bu Gmail adresi zaten kayıtlı."
         )
 
-    code = str(secrets.randbelow(900000) + 100000)
+    code = str(
+        secrets.randbelow(900000) + 100000
+    )
 
     session["register_username"] = username
     session["register_email"] = email
     session["register_code"] = code
     session["register_code_time"] = time.time()
 
-    success, message = send_code(email, code)
+    success, message = send_code(
+        email,
+        code
+    )
 
     if not success:
         session.clear()
@@ -325,14 +345,16 @@ def kayit():
 
 @app.route("/dogrula", methods=["GET", "POST"])
 def dogrula():
-
     if "register_code" not in session:
         return redirect(url_for("kayit"))
 
     if request.method == "GET":
         return page("verify.html")
 
-    entered_code = request.form.get("code", "").strip()
+    entered_code = request.form.get(
+        "code",
+        ""
+    ).strip()
 
     saved_code = session.get("register_code")
     code_time = session.get("register_code_time")
@@ -389,9 +411,7 @@ def dogrula():
 
 @app.route("/giris", methods=["GET", "POST"])
 def giris():
-
     if request.method == "GET":
-
         if session.get("logged_in"):
             return redirect(url_for("hesap"))
 
@@ -400,8 +420,16 @@ def giris():
     if session.get("logged_in"):
         return redirect(url_for("hesap"))
 
-    username = request.form.get("username", "").strip()
-    email = request.form.get("email", "").strip().lower()
+    username = request.form.get(
+        "username",
+        ""
+    ).strip()
+
+    email = request.form.get(
+        "email",
+        ""
+    ).strip().lower()
+
     remember = request.form.get("remember") == "on"
 
     if not username or not email:
@@ -436,7 +464,9 @@ def giris():
             error="Kullanıcı adı veya Gmail yanlış."
         )
 
-    code = str(secrets.randbelow(900000) + 100000)
+    code = str(
+        secrets.randbelow(900000) + 100000
+    )
 
     session["login_username"] = user["username"]
     session["login_email"] = user["email"]
@@ -444,7 +474,10 @@ def giris():
     session["login_code_time"] = time.time()
     session["login_remember"] = remember
 
-    success, message = send_code(user["email"], code)
+    success, message = send_code(
+        user["email"],
+        code
+    )
 
     if not success:
         session.clear()
@@ -459,14 +492,16 @@ def giris():
 
 @app.route("/login-dogrula", methods=["GET", "POST"])
 def login_dogrula():
-
     if "login_code" not in session:
         return redirect(url_for("giris"))
 
     if request.method == "GET":
         return page("login_verify.html")
 
-    entered_code = request.form.get("code", "").strip()
+    entered_code = request.form.get(
+        "code",
+        ""
+    ).strip()
 
     saved_code = session.get("login_code")
     code_time = session.get("login_code_time")
@@ -486,7 +521,10 @@ def login_dogrula():
         )
 
     username = session["login_username"]
-    remember = session.get("login_remember", False)
+    remember = session.get(
+        "login_remember",
+        False
+    )
 
     session.clear()
 
@@ -502,7 +540,6 @@ def login_dogrula():
 
 @app.route("/hesap")
 def hesap():
-
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
@@ -535,21 +572,26 @@ def hesap():
         session.clear()
         return redirect(url_for("giris"))
 
-    toast = session.pop("toast", None)
+    toast = session.pop(
+        "toast",
+        None
+    )
 
     return render_template(
         "account.html",
         username=user["username"],
         email=user["email"],
         apps=apps,
-        is_admin=session.get("is_admin", False),
+        is_admin=session.get(
+            "is_admin",
+            False
+        ),
         toast=toast
     )
 
 
 @app.route("/yonetici-giris", methods=["GET", "POST"])
 def yonetici_giris():
-
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
@@ -559,7 +601,10 @@ def yonetici_giris():
     if request.method == "GET":
         return render_template("admin_login.html")
 
-    password = request.form.get("password", "")
+    password = request.form.get(
+        "password",
+        ""
+    )
 
     if password != ADMIN_PASSWORD:
         return render_template(
@@ -575,7 +620,6 @@ def yonetici_giris():
 
 @app.route("/yonetici")
 def yonetici():
-
     if not session.get("logged_in"):
         return redirect(url_for("giris"))
 
@@ -628,7 +672,6 @@ def yonetici():
 
 @app.route("/indir/uzmannotpromax")
 def indir_uzmannotpromax():
-
     if not session.get("logged_in"):
         abort(403)
 
@@ -657,7 +700,6 @@ def indir_uzmannotpromax():
 
 @app.route("/indir/uzmannot")
 def indir_uzmannot():
-
     downloads_folder = os.path.join(
         app.root_path,
         "static"
@@ -681,6 +723,24 @@ def indir_uzmannot():
     )
 
 
+@app.route("/indir/rex-launcher")
+def indir_rex_launcher():
+    if not session.get("logged_in"):
+        abort(403)
+
+    record_download("ReX.Launcher.exe")
+
+    github_url = (
+        "https://github.com/"
+        "UzmanReX/ReXStudio/"
+        "releases/download/"
+        "v1.0.0/"
+        "ReX.Launcher.exe"
+    )
+
+    return redirect(github_url)
+
+
 @app.route("/cikis")
 def cikis():
     session.clear()
@@ -690,5 +750,10 @@ def cikis():
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
+        port=int(
+            os.environ.get(
+                "PORT",
+                5000
+            )
+        )
     )
