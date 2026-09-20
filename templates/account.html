@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 
@@ -87,6 +88,28 @@ body{
 
 .logout{
     background:red;
+}
+
+.admin-button{
+    background:#050505;
+
+    color:#00ffff;
+
+    border:1px solid #00ffff;
+
+    box-shadow:
+    0 0 10px #00ffff,
+    0 0 20px rgba(0,255,255,0.4);
+}
+
+.admin-button:hover{
+    background:#080808;
+
+    color:white;
+
+    box-shadow:
+    0 0 15px #00ffff,
+    0 0 30px rgba(0,255,255,0.6);
 }
 
 .toast{
@@ -217,6 +240,24 @@ Henüz uygulama yüklemediniz.
 {% endif %}
 
 </div>
+
+
+{% if is_admin %}
+
+<a class="button admin-button" href="/yonetici">
+🛡️ Yönetici Paneli
+</a>
+
+{% else %}
+
+<a class="button admin-button" href="/yonetici-giris">
+🔐 Yönetici Girişi
+</a>
+
+{% endif %}
+
+
+<br>
 
 <a class="button" href="/anasayfa">
 Ana Sayfa
