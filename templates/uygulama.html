@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 
@@ -24,6 +23,8 @@ body{
     overflow-x:hidden;
     padding-top:100px;
 }
+
+/* ARKA PLAN */
 
 .bg{
     position:fixed;
@@ -68,6 +69,8 @@ body{
 
 }
 
+/* PARTICLES */
+
 .particles{
     position:fixed;
     top:0;
@@ -100,6 +103,8 @@ body{
     }
 
 }
+
+/* NAVBAR */
 
 .navbar{
     position:fixed;
@@ -155,6 +160,8 @@ body{
     background:rgba(0,255,255,0.1);
     box-shadow:0 0 15px cyan;
 }
+
+/* YOUTUBE */
 
 .yt-btn{
     display:flex;
@@ -212,6 +219,8 @@ body{
 
 }
 
+/* HESAP */
+
 .account-btn{
     color:cyan !important;
     font-weight:bold;
@@ -233,6 +242,8 @@ body{
     0 0 30px cyan;
 }
 
+/* KAYIT */
+
 .register-btn{
     color:#ff00ff !important;
 
@@ -252,6 +263,8 @@ body{
     0 0 15px #ff00ff,
     0 0 30px #ff00ff;
 }
+
+/* ÇIKIŞ */
 
 .logout-btn{
     color:red !important;
@@ -273,6 +286,8 @@ body{
     0 0 30px red;
 }
 
+/* BAŞLIK */
+
 .title{
     text-align:center;
     margin-bottom:50px;
@@ -287,6 +302,8 @@ body{
     0 0 20px cyan,
     0 0 40px cyan;
 }
+
+/* UYGULAMALAR */
 
 .apps{
     display:flex;
@@ -346,6 +363,8 @@ body{
     margin-bottom:15px;
 }
 
+/* İNDİR */
+
 .download{
     display:inline-block;
 
@@ -379,6 +398,8 @@ body{
     0 0 40px cyan;
 }
 
+/* KİLİTLİ İNDİR */
+
 .locked-download{
     opacity:0.45;
     cursor:not-allowed;
@@ -388,15 +409,20 @@ body{
     box-shadow:none;
 }
 
+/* MAX İNDİRME ALANI */
+
 .max-download-area{
     position:relative;
     display:inline-block;
     margin-top:20px;
+    padding-top:0;
 }
 
 .max-download-area .download{
     margin-top:0;
 }
+
+/* KİLİT */
 
 .lock-button{
     position:absolute;
@@ -423,9 +449,15 @@ body{
 
     cursor:pointer;
 
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
     box-shadow:
     0 0 10px #ff00ff,
     0 0 20px #ff00ff;
+
+    z-index:10;
 }
 
 .lock-button:hover{
@@ -436,6 +468,8 @@ body{
     0 0 15px #ff00ff,
     0 0 30px #ff00ff;
 }
+
+/* KİLİT MESAJI */
 
 .lock-message{
     display:none;
@@ -456,13 +490,14 @@ body{
     margin-top:10px;
 }
 
-
-/* SADECE BİLGİ KUTUSU */
+/* BİLGİ KUTUSU */
 
 .info-area{
     position:absolute;
+
     top:15px;
     right:15px;
+
     z-index:20;
 }
 
@@ -490,6 +525,16 @@ body{
     box-shadow:
     0 0 8px cyan,
     0 0 15px cyan;
+
+    transition:0.2s;
+}
+
+.info-button:hover{
+    transform:scale(1.1);
+
+    box-shadow:
+    0 0 15px cyan,
+    0 0 30px cyan;
 }
 
 .info-tooltip{
@@ -530,6 +575,40 @@ body{
 .info-area:hover .info-tooltip{
     opacity:1;
     visibility:visible;
+}
+
+/* MOBİL */
+
+@media(max-width:900px){
+
+    .navbar{
+        padding:15px 20px;
+    }
+
+    .menu{
+        gap:8px;
+        flex-wrap:wrap;
+        justify-content:flex-end;
+    }
+
+    .menu a{
+        padding:6px 9px;
+        font-size:13px;
+    }
+
+    .logo{
+        font-size:20px;
+    }
+
+    .logo img{
+        width:34px;
+        height:34px;
+    }
+
+    .title h1{
+        font-size:45px;
+    }
+
 }
 
 </style>
@@ -616,9 +695,10 @@ Kayıt Ol
 
 <div class="apps">
 
+<!-- UZMAN NOT -->
+
 <div class="app-card">
 
-<!-- BİLGİ -->
 <div class="info-area">
 
     <div class="info-button">
@@ -626,14 +706,15 @@ Kayıt Ol
     </div>
 
     <div class="info-tooltip">
-        Şüpheli indirme sayılabilir.<br>
-        Yine de indire basınız.
+        Şüpheli indirme sayılabilir yinede indire basınız.
     </div>
 
 </div>
 
-<img class="app-icon"
-src="/static/uzmannot.png">
+<img
+    class="app-icon"
+    src="/static/uzmannot.png"
+>
 
 <h2>UzmanNot📝</h2>
 
@@ -649,17 +730,21 @@ Modern not alma sistemi.
 Sürüm 1.0
 </div>
 
-<a class="download"
-   href="/static/UzmanNotPro.exe"
-   download>
+<a
+    class="download"
+    href="/static/UzmanNotPro.exe"
+    download
+>
 İndir
 </a>
 
 </div>
 
+
+<!-- UZMAN NOT PRO MAX -->
+
 <div class="app-card">
 
-<!-- BİLGİ -->
 <div class="info-area">
 
     <div class="info-button">
@@ -667,14 +752,15 @@ Sürüm 1.0
     </div>
 
     <div class="info-tooltip">
-        Şüpheli indirme sayılabilir.<br>
-        Yine de indire basınız.
+        Şüpheli indirme sayılabilir yinede indire basınız.
     </div>
 
 </div>
 
-<img class="app-icon"
-src="/static/uzmannotmax.png">
+<img
+    class="app-icon"
+    src="/static/uzmannotmax.png"
+>
 
 <h2>UzmanNot Pro MAX💎</h2>
 
@@ -694,8 +780,10 @@ Sürüm 2.0 MAX
 
 <div class="max-download-area">
 
-<a class="download"
-   href="/indir/uzmannotpromax">
+<a
+    class="download"
+    href="/indir/uzmannotpromax"
+>
 İndir
 </a>
 
@@ -707,20 +795,23 @@ Sürüm 2.0 MAX
 
 <button
     class="download locked-download"
-    type="button">
+    type="button"
+>
 İndir
 </button>
 
 <button
     class="lock-button"
     type="button"
-    onclick="showMaxLoginMessage()">
+    onclick="showMaxLoginMessage()"
+>
 🔒
 </button>
 
 <div
     id="max-login-message"
-    class="lock-message">
+    class="lock-message"
+>
 Sadece giriş yapanlar indirebilir.
 </div>
 
@@ -733,6 +824,8 @@ Sadece giriş yapanlar indirebilir.
 </div>
 
 <script>
+
+/* KİLİT MESAJI */
 
 function showMaxLoginMessage(){
 
@@ -749,31 +842,40 @@ function showMaxLoginMessage(){
 
         message.style.display = "none";
 
-    }, 5000);
+    },5000);
+
 }
 
-const particles = document.getElementById("particles");
+
+/* PARÇACIKLAR */
+
+const particles =
+    document.getElementById("particles");
 
 for(let i = 0; i < 120; i++){
 
-    let p = document.createElement("div");
+    const p =
+        document.createElement("div");
 
     p.classList.add("particle");
 
     p.style.left =
-    Math.random() * 100 + "vw";
+        Math.random() * 100 + "vw";
 
     p.style.animationDuration =
-    (4 + Math.random() * 8) + "s";
+        (4 + Math.random() * 8) + "s";
 
     p.style.opacity =
-    Math.random();
+        Math.random();
 
     p.style.width =
+        (2 + Math.random() * 5) + "px";
+
     p.style.height =
-    (2 + Math.random() * 5) + "px";
+        p.style.width;
 
     particles.appendChild(p);
+
 }
 
 </script>
